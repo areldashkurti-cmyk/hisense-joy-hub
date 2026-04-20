@@ -1,0 +1,1 @@
+CREATE POLICY "Public can view active distributors" ON public.distributors FOR SELECT TO anon USING (active = true);
