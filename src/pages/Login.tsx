@@ -14,6 +14,7 @@ const loginSchema = z.object({
   email: z.string().trim().email({ message: "Enter a valid email" }).max(255),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }).max(72),
 });
+type LoginInput = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword(parsed.data);
+    const { error } = await supabase.auth.signInWithPassword(parsed.data as LoginInput);
     setLoading(false);
 
     if (error) {
