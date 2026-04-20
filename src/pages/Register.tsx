@@ -210,41 +210,51 @@ const Register = () => {
               <Label htmlFor="distributorCode" className="text-xs uppercase tracking-wider">
                 Distributor code
               </Label>
-              <Input
-                id="distributorCode"
-                name="distributorCode"
-                placeholder="LV12523"
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                className={cn(
-                  "h-12 rounded-xl bg-card",
-                  codeValid === true && "border-primary",
-                  codeValid === false && "border-destructive",
+              <div className="relative">
+                <Input
+                  id="distributorCode"
+                  name="distributorCode"
+                  placeholder="LV12523"
+                  required
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.toUpperCase())}
+                  className={cn(
+                    "h-12 rounded-xl bg-card pr-12",
+                    codeValid === true && "border-primary",
+                    codeValid === false && "border-destructive",
+                  )}
+                />
+                {!codeChecking && codeValid === true && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <Check className="h-4 w-4" strokeWidth={3} />
+                  </span>
                 )}
-              />
-              <p
-                className={cn(
-                  "flex items-center gap-1.5 text-xs",
-                  distributorName ? "text-primary" : "text-muted-foreground",
+              </div>
+              <div className="space-y-0.5 text-xs">
+                {codeChecking && (
+                  <p className="text-muted-foreground">Looking up distributor…</p>
                 )}
-              >
-                {codeChecking && "Looking up distributor…"}
-                {!codeChecking && distributorName && (
+                {!codeChecking && codeValid === true && (
                   <>
-                    <Check className="h-3.5 w-3.5" /> Linked to{" "}
-                    <span className="font-semibold">{distributorName}</span>
+                    <p className="font-semibold text-primary">
+                      Authorized distributor verified
+                    </p>
+                    <p className="text-muted-foreground">
+                      Provided by your authorized Hisense distributor.
+                    </p>
                   </>
                 )}
                 {!codeChecking && codeValid === false && (
-                  <span className="text-destructive">
+                  <p className="text-destructive">
                     Code not recognized. Confirm with your distributor.
-                  </span>
+                  </p>
                 )}
-                {!codeChecking && codeValid === null && code === "" && (
-                  <>Provided by your authorized Hisense distributor.</>
+                {!codeChecking && codeValid === null && (
+                  <p className="text-muted-foreground">
+                    Provided by your authorized Hisense distributor.
+                  </p>
                 )}
-              </p>
+              </div>
             </div>
 
             <div className="border-t border-border pt-6">
