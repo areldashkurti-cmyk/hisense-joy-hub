@@ -33,8 +33,8 @@ const Login = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const parsed = loginSchema.safeParse({
-      email: formData.get("email"),
-      password: formData.get("password"),
+      email: String(formData.get("email") ?? ""),
+      password: String(formData.get("password") ?? ""),
     });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
@@ -42,7 +42,10 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword(parsed.data as LoginInput);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: parsed.data.email,
+      password: parsed.data.password,
+    });
     setLoading(false);
 
     if (error) {
