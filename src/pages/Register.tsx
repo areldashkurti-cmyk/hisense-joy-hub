@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,52 +13,140 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
-const Field = ({
-  id,
-  label,
-  type = "text",
-  placeholder,
-  required = true,
-  hint,
-}: {
-  id: string;
-  label: string;
-  type?: string;
-  placeholder?: string;
-  required?: boolean;
-  hint?: string;
-}) => (
-  <div className="space-y-2">
-    <Label htmlFor={id} className="text-xs uppercase tracking-wider">
-      {label}
-    </Label>
-    <Input
-      id={id}
-      type={type}
-      placeholder={placeholder}
-      required={required}
-      className="h-12 rounded-xl bg-card"
-    />
-    {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-  </div>
-);
+const phoneRegex = /^[+()\-.\s\d]{7,20}$/;
+
+const registerSchema = z
+  .object({
+    firstName: z.string().trim().min(1, "First name is required").max(80),
+    lastName: z.string().trim().min(1, "Last name is required").max(80),
+    email: z.string().trim().email("Enter a valid email").max(255),
+    phone: z.string().trim().regex(phoneRegex, "Enter a valid US/CA phone").max(20),
+    distributorCode: z.string().trim().min(1, "Distributor code is required").max(40),
+    street: z.string().trim().min(1, "Street is required").max(200),
+    apt: z.string().trim().max(60).optional(),
+    city: z.string().trim().min(1, "City is required").max(80),
+    state: z.string().trim().min(1, "State is required").max(40),
+    postal: z.string().trim().min(3, "Postal code is required").max(12),
+    country: z.string(),
+    password: z.string().min(8, "Password must be at least 8 characters").max(72),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords don't match",
+  });
 
 const Register = () => {
   const navigate = useNavigate();
+  const { user, isReady } = useAuth();
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [code, setCode] = useState("");
+  const [distributorName, setDistributorName] = useState<string | null>(null);
+  const [codeChecking, setCodeChecking] = useState(false);
+  const [codeValid, setCodeValid] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isReady && user) navigate("/app", { replace: true });
+  }, [isReady, user, navigate]);
+
+  // Distributor autofill — debounced lookup
+  useEffect(() => {
+    const trimmed = code.trim();
+    if (!trimmed) {
+      setDistributorName(null);
+      setCodeValid(null);
+      return;
+    }
+    setCodeChecking(true);
+    const handle = setTimeout(async () => {
+      const { data, error } = await supabase
+        .from("distributors")
+        .select("name")
+        .ilike("code", trimmed)
+        .eq("active", true)
+        .maybeSingle();
+      setCodeChecking(false);
+      if (error || !data) {
+        setDistributorName(null);
+        setCodeValid(false);
+      } else {
+        setDistributorName(data.name);
+        setCodeValid(true);
+      }
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [code]);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Account ready to create!", {
-      description:
-        "Sign-up is not wired up yet — your distributor will verify shortly.",
+    const fd = new FormData(e.currentTarget);
+    const parsed = registerSchema.safeParse({
+      firstName: fd.get("firstName"),
+      lastName: fd.get("lastName"),
+      email: fd.get("email"),
+      phone: fd.get("phone"),
+      distributorCode: fd.get("distributorCode"),
+      street: fd.get("street"),
+      apt: fd.get("apt") || "",
+      city: fd.get("city"),
+      state: fd.get("state"),
+      postal: fd.get("postal"),
+      country: fd.get("country") || "US",
+      password: fd.get("password"),
+      confirmPassword: fd.get("confirmPassword"),
     });
-    setTimeout(() => navigate("/"), 800);
+
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please fix the form");
+      return;
+    }
+    if (codeValid === false) {
+      toast.error("Distributor code not recognized", {
+        description: "Double-check the code provided by your distributor.",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: parsed.data.email,
+      password: parsed.data.password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/app`,
+        data: {
+          first_name: parsed.data.firstName,
+          last_name: parsed.data.lastName,
+          phone: parsed.data.phone,
+          distributor_code: parsed.data.distributorCode,
+          street: parsed.data.street,
+          apt: parsed.data.apt,
+          city: parsed.data.city,
+          state: parsed.data.state,
+          postal_code: parsed.data.postal,
+          country: parsed.data.country,
+        },
+      },
+    });
+    setLoading(false);
+
+    if (error) {
+      toast.error("Couldn't create account", { description: error.message });
+      return;
+    }
+    toast.success("Account created!", {
+      description: "You're all set — welcome to Hisense Rewards.",
+    });
+    navigate("/app", { replace: true });
   };
 
   return (
     <main className="grid min-h-screen lg:grid-cols-2">
-      {/* Left rail (dark) */}
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-ink bg-hero p-12 lg:flex">
         <Link
           to="/"
@@ -83,7 +172,6 @@ const Register = () => {
         </div>
       </aside>
 
-      {/* Right form */}
       <section className="overflow-y-auto bg-background px-6 py-12 sm:px-12">
         <div className="mx-auto max-w-xl">
           <div className="lg:hidden mb-8">
@@ -99,9 +187,7 @@ const Register = () => {
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold tracking-tight">
-            Create your account
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight">Create your account</h1>
           <p className="mt-2 text-muted-foreground">
             It takes less than a minute. You'll need your distributor code.
           </p>
@@ -112,24 +198,54 @@ const Register = () => {
               <Field id="lastName" label="Last name" placeholder="Cooper" />
             </div>
 
-            <Field
-              id="email"
-              label="Email"
-              type="email"
-              placeholder="you@company.com"
-            />
+            <Field id="email" label="Email" type="email" placeholder="you@company.com" />
             <Field
               id="phone"
               label="Phone (US/CAN)"
               type="tel"
               placeholder="(555) 123-4567"
             />
-            <Field
-              id="distributor"
-              label="Distributor code"
-              placeholder="LV12523"
-              hint="Provided by your authorized Hisense distributor."
-            />
+
+            <div className="space-y-2">
+              <Label htmlFor="distributorCode" className="text-xs uppercase tracking-wider">
+                Distributor code
+              </Label>
+              <Input
+                id="distributorCode"
+                name="distributorCode"
+                placeholder="LV12523"
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                className={cn(
+                  "h-12 rounded-xl bg-card",
+                  codeValid === true && "border-primary",
+                  codeValid === false && "border-destructive",
+                )}
+              />
+              <p
+                className={cn(
+                  "flex items-center gap-1.5 text-xs",
+                  distributorName ? "text-primary" : "text-muted-foreground",
+                )}
+              >
+                {codeChecking && "Looking up distributor…"}
+                {!codeChecking && distributorName && (
+                  <>
+                    <Check className="h-3.5 w-3.5" /> Linked to{" "}
+                    <span className="font-semibold">{distributorName}</span>
+                  </>
+                )}
+                {!codeChecking && codeValid === false && (
+                  <span className="text-destructive">
+                    Code not recognized. Confirm with your distributor.
+                  </span>
+                )}
+                {!codeChecking && codeValid === null && code === "" && (
+                  <>Provided by your authorized Hisense distributor.</>
+                )}
+              </p>
+            </div>
 
             <div className="border-t border-border pt-6">
               <h3 className="text-base font-semibold">Mailing address</h3>
@@ -138,11 +254,7 @@ const Register = () => {
               </p>
 
               <div className="mt-5 space-y-5">
-                <Field
-                  id="street"
-                  label="Street address"
-                  placeholder="123 Main St"
-                />
+                <Field id="street" label="Street address" placeholder="123 Main St" />
                 <Field
                   id="apt"
                   label="Apt, suite, etc. (optional)"
@@ -151,36 +263,21 @@ const Register = () => {
                 />
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Field id="city" label="City" placeholder="Las Vegas" />
-                  <Field
-                    id="state"
-                    label="State / Province"
-                    placeholder="NV"
-                  />
+                  <Field id="state" label="State / Province" placeholder="NV" />
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <Field
-                    id="postal"
-                    label="Postal / ZIP code"
-                    placeholder="89109"
-                  />
+                  <Field id="postal" label="Postal / ZIP code" placeholder="89109" />
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="country"
-                      className="text-xs uppercase tracking-wider"
-                    >
+                    <Label htmlFor="country" className="text-xs uppercase tracking-wider">
                       Country
                     </Label>
-                    <Select defaultValue="US">
-                      <SelectTrigger
-                        id="country"
-                        className="h-12 rounded-xl bg-card"
-                      >
+                    <Select name="country" defaultValue="US">
+                      <SelectTrigger id="country" className="h-12 rounded-xl bg-card">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="US">United States</SelectItem>
                         <SelectItem value="CA">Canada</SelectItem>
-                        <SelectItem value="MX">Mexico</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -190,27 +287,21 @@ const Register = () => {
 
             <div className="grid gap-5 border-t border-border pt-6 sm:grid-cols-2">
               <Field id="password" label="Password" type="password" />
-              <Field
-                id="confirmPassword"
-                label="Confirm password"
-                type="password"
-              />
+              <Field id="confirmPassword" label="Confirm password" type="password" />
             </div>
 
             <Button
               type="submit"
               variant="hero"
+              disabled={loading}
               className="h-14 w-full rounded-2xl text-base"
             >
-              Create account
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Create account"}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
               Already a member?{" "}
-              <Link
-                to="/login"
-                className="font-semibold text-primary hover:underline"
-              >
+              <Link to="/login" className="font-semibold text-primary hover:underline">
                 Sign in
               </Link>
             </p>
@@ -220,5 +311,33 @@ const Register = () => {
     </main>
   );
 };
+
+const Field = ({
+  id,
+  label,
+  type = "text",
+  placeholder,
+  required = true,
+}: {
+  id: string;
+  label: string;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+}) => (
+  <div className="space-y-2">
+    <Label htmlFor={id} className="text-xs uppercase tracking-wider">
+      {label}
+    </Label>
+    <Input
+      id={id}
+      name={id}
+      type={type}
+      placeholder={placeholder}
+      required={required}
+      className="h-12 rounded-xl bg-card"
+    />
+  </div>
+);
 
 export default Register;
