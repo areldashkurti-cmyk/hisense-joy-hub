@@ -1,0 +1,248 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Loader2, Upload, FileCheck2 } from "lucide-react";
+import { z } from "zod";
+import { format } from "date-fns";
+import { AppShell } from "@/components/AppShell";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
+
+const claimSchema = z.object({
+  saleDate: z.string().min(1, "Date of sale is required"),
+  customerName: z.string().trim().min(1, "Customer name is required").max(120),
+  modelNumber: z.string().trim().min(1, "Model number is required").max(80),
+  serialNumber: z.string().trim().min(1, "Serial number is required").max(80),
+  notes: z.string().trim().max(500).optional(),
+});
+
+const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+
+const NewClaim = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [file, setFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null;
+    if (!f) return setFile(null);
+    if (!ALLOWED_TYPES.includes(f.type)) {
+      toast.error("Unsupported file type", {
+        description: "Upload a PDF, JPG, or PNG.",
+      });
+      return;
+    }
+    if (f.size > MAX_BYTES) {
+      toast.error("File too large", {
+        description: "Max size is 10 MB.",
+      });
+      return;
+    }
+    setFile(f);
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!file) {
+      toast.error("Proof of purchase is required");
+      return;
+    }
+
+    const fd = new FormData(e.currentTarget);
+    const parsed = claimSchema.safeParse({
+      saleDate: fd.get("saleDate"),
+      customerName: fd.get("customerName"),
+      modelNumber: fd.get("modelNumber"),
+      serialNumber: fd.get("serialNumber"),
+      notes: (fd.get("notes") as string) || undefined,
+    });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please fix the form");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // 1. Upload file to user's folder
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("proof-of-purchase")
+        .upload(path, file, { upsert: false, contentType: file.type });
+      if (upErr) throw upErr;
+
+      // 2. Insert claim
+      const { error: insErr } = await supabase.from("claims").insert({
+        user_id: user.id,
+        sale_date: parsed.data.saleDate,
+        customer_name: parsed.data.customerName,
+        model_number: parsed.data.modelNumber,
+        serial_number: parsed.data.serialNumber,
+        notes: parsed.data.notes ?? null,
+        proof_path: path,
+      });
+      if (insErr) throw insErr;
+
+      toast.success("Claim submitted!", {
+        description: "We'll review and notify you when there's an update.",
+      });
+      navigate("/app/dashboard");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      toast.error("Couldn't submit claim", { description: msg });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <AppShell>
+      <header className="mb-8">
+        <p className="text-sm font-medium uppercase tracking-widest text-primary">
+          Claims portal
+        </p>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
+          Submit a claim
+        </h1>
+        <p className="mt-2 max-w-2xl text-muted-foreground">
+          Log a qualified Hisense Comfort installation. We typically review
+          within 3 business days.
+        </p>
+      </header>
+
+      <Card className="p-6 sm:p-8">
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="saleDate" className="text-xs uppercase tracking-wider">
+                Date of sale
+              </Label>
+              <Input
+                id="saleDate"
+                name="saleDate"
+                type="date"
+                max={format(new Date(), "yyyy-MM-dd")}
+                required
+                className="h-12 rounded-xl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customerName" className="text-xs uppercase tracking-wider">
+                Customer name
+              </Label>
+              <Input
+                id="customerName"
+                name="customerName"
+                placeholder="Jane Smith"
+                required
+                className="h-12 rounded-xl"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="modelNumber" className="text-xs uppercase tracking-wider">
+                Model number
+              </Label>
+              <Input
+                id="modelNumber"
+                name="modelNumber"
+                placeholder="AVS-12UR4SVETG75"
+                required
+                className="h-12 rounded-xl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="serialNumber" className="text-xs uppercase tracking-wider">
+                Serial number
+              </Label>
+              <Input
+                id="serialNumber"
+                name="serialNumber"
+                placeholder="HSN12345678"
+                required
+                className="h-12 rounded-xl"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-xs uppercase tracking-wider">
+              Notes (optional)
+            </Label>
+            <Textarea
+              id="notes"
+              name="notes"
+              placeholder="Anything we should know about this install?"
+              maxLength={500}
+              className="min-h-24 rounded-xl"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs uppercase tracking-wider">
+              Proof of purchase
+            </Label>
+            <label
+              htmlFor="proof"
+              className={cn(
+                "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary hover:bg-secondary/40",
+                file && "border-primary bg-secondary/40",
+              )}
+            >
+              {file ? (
+                <>
+                  <FileCheck2 className="h-8 w-8 text-primary" />
+                  <p className="font-medium">{file.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {(file.size / 1024).toFixed(0)} KB · click to replace
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <p className="font-medium">Click to upload</p>
+                  <p className="text-xs text-muted-foreground">
+                    PDF, JPG, or PNG · up to 10 MB
+                  </p>
+                </>
+              )}
+              <input
+                id="proof"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                onChange={onFile}
+                className="sr-only"
+              />
+            </label>
+          </div>
+
+          <Button
+            type="submit"
+            variant="hero"
+            disabled={submitting}
+            className="h-14 w-full rounded-2xl text-base"
+          >
+            {submitting ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              "Submit claim"
+            )}
+          </Button>
+        </form>
+      </Card>
+    </AppShell>
+  );
+};
+
+export default NewClaim;
