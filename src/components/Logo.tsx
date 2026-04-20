@@ -10,12 +10,12 @@ export const Logo = ({ className, variant = "light" }: LogoProps) => {
     variant === "light" ? "text-ink-foreground" : "text-foreground";
 
   return (
-    <div className={cn("flex items-center gap-2.5", className)}>
-      <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-glow">
-        <div className="h-3.5 w-3.5 rotate-45 rounded-sm bg-ink/80" />
-      </div>
-      <span className={cn("text-xl font-bold tracking-tight", textColor)}>
-        HiPro<span className="text-primary">+</span>
+    <div className={cn("flex flex-col items-start", className)}>
+      <span className={cn("text-2xl font-black tracking-tighter", textColor)}>
+        Hisense
+      </span>
+      <span className="text-xs font-medium tracking-widest text-primary uppercase">
+        rewards
       </span>
     </div>
   );
