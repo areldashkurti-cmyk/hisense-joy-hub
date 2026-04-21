@@ -62,6 +62,19 @@ const Dashboard = () => {
     },
   });
 
+  const { data: card } = useQuery({
+    queryKey: ["payment-card", user?.id],
+    enabled: isReady && !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("payment_cards")
+        .select("card_last4, expiry_month, expiry_year, cardholder_name")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
   const stats = useMemo(() => {
     const total = claims.length;
     const pending = claims.filter((c) => c.status === "pending").length;
@@ -108,8 +121,16 @@ const Dashboard = () => {
               ${stats.balance.toFixed(2)}
             </p>
             <p className="mt-6 font-mono text-sm tracking-widest text-ink-muted">
-              •••• •••• •••• {user?.id?.slice(-4).toUpperCase() ?? "0000"}
+              {card
+                ? `•••• •••• •••• ${card.card_last4}`
+                : "•••• •••• •••• ••••"}
             </p>
+            {card && (
+              <p className="mt-1 text-[11px] text-ink-muted">
+                Exp {String(card.expiry_month).padStart(2, "0")}/
+                {String(card.expiry_year).slice(-2)}
+              </p>
+            )}
           </div>
           <div className="text-right">
             <Wallet className="ml-auto h-8 w-8 text-primary" />
@@ -117,7 +138,7 @@ const Dashboard = () => {
               Cardholder
             </p>
             <p className="text-sm font-semibold text-ink-foreground">
-              {user?.email}
+              {card?.cardholder_name ?? user?.email}
             </p>
           </div>
         </div>
