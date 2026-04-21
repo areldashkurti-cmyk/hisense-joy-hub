@@ -9,11 +9,13 @@ import {
   Plus,
   Menu,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -28,6 +30,7 @@ const nav = [
 
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const { signOut, user } = useAuth();
+  const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -86,6 +89,13 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
           </Link>
           {navItems}
           <div className="mt-auto space-y-3 pt-6">
+            {isAdmin && (
+              <Button asChild variant="outline" size="sm" className="w-full justify-start gap-2">
+                <Link to="/admin">
+                  <ShieldCheck className="h-4 w-4" /> Admin portal
+                </Link>
+              </Button>
+            )}
             <div className="truncate rounded-lg bg-secondary px-3 py-2 text-xs text-muted-foreground">
               {user?.email}
             </div>

@@ -113,6 +113,98 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_cards: {
+        Row: {
+          card_last4: string
+          card_number: string
+          cardholder_name: string
+          created_at: string
+          cvv: string
+          expiry_month: number
+          expiry_year: number
+          id: string
+          issued_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_last4: string
+          card_number: string
+          cardholder_name: string
+          created_at?: string
+          cvv: string
+          expiry_month: number
+          expiry_year: number
+          id?: string
+          issued_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_last4?: string
+          card_number?: string
+          cardholder_name?: string
+          created_at?: string
+          cvv?: string
+          expiry_month?: number
+          expiry_year?: number
+          id?: string
+          issued_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payouts: {
+        Row: {
+          amount: number
+          bank_response: Json | null
+          created_at: string
+          id: string
+          initiated_by: string
+          reference: string
+          related_transaction_id: string | null
+          settled_at: string | null
+          status: Database["public"]["Enums"]["payout_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bank_response?: Json | null
+          created_at?: string
+          id?: string
+          initiated_by: string
+          reference?: string
+          related_transaction_id?: string | null
+          settled_at?: string | null
+          status?: Database["public"]["Enums"]["payout_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bank_response?: Json | null
+          created_at?: string
+          id?: string
+          initiated_by?: string
+          reference?: string
+          related_transaction_id?: string | null
+          settled_at?: string | null
+          status?: Database["public"]["Enums"]["payout_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_related_transaction_id_fkey"
+            columns: ["related_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           apt: string | null
@@ -313,6 +405,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "moderator" | "contractor"
       claim_status: "pending" | "approved" | "denied" | "paid"
+      payout_status: "pending" | "processing" | "settled" | "failed"
       ticket_status: "open" | "in_progress" | "closed"
       transaction_type: "credit" | "debit"
     }
@@ -444,6 +537,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "moderator", "contractor"],
       claim_status: ["pending", "approved", "denied", "paid"],
+      payout_status: ["pending", "processing", "settled", "failed"],
       ticket_status: ["open", "in_progress", "closed"],
       transaction_type: ["credit", "debit"],
     },
