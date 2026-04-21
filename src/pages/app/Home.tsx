@@ -124,7 +124,7 @@ const Home = () => {
         <ShortcutCard
           to="/app/dashboard"
           eyebrow="Wallet"
-          title="View virtual card"
+          title="View card"
           body="Check your balance and recent transactions."
         />
         <ShortcutCard

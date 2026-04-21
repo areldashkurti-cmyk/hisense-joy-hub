@@ -28,7 +28,7 @@ export const Hero = () => {
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
               The HiPro Contractor Rewards Program turns every qualified
               installation into instant earnings. Submit a claim, track
-              approvals in real time, and redeem from your virtual card.
+              approvals in real time, and redeem from your rewards card.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
