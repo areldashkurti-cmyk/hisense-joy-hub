@@ -14,7 +14,7 @@ const steps = [
   {
     icon: CreditCard,
     title: "Spend your rewards",
-    body: "Approved claims credit your virtual card instantly. Redeem when you're ready.",
+    body: "Approved claims credit your rewards card instantly. Redeem when you're ready.",
   },
 ];
 

@@ -95,13 +95,13 @@ const Dashboard = () => {
         </Button>
       </header>
 
-      {/* Virtual card */}
+      {/* Rewards card */}
       <Card className="relative overflow-hidden border-0 bg-ink bg-card-dark p-8 text-ink-foreground shadow-card">
         <div className="absolute right-0 top-0 h-64 w-64 -translate-y-12 translate-x-12 rounded-full bg-primary/30 blur-3xl" />
         <div className="relative flex flex-wrap items-start justify-between gap-6">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-muted">
-              Hisense Rewards · Virtual Card
+              Hisense Rewards · Card
             </p>
             <p className="mt-6 text-sm text-ink-muted">Available balance</p>
             <p className="mt-1 text-5xl font-black tracking-tight">

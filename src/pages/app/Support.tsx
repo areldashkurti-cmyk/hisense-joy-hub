@@ -27,7 +27,7 @@ const FAQS = [
   },
   {
     q: "When are payouts processed?",
-    a: "Approved claims credit your virtual card balance within one business day. Withdrawals are processed weekly on Fridays.",
+    a: "Approved claims credit your rewards card balance within one business day. Withdrawals are processed weekly on Fridays.",
   },
   {
     q: "What counts as a qualifying installation?",
