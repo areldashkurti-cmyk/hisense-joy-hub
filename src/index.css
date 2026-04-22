@@ -8,62 +8,62 @@
 
 @layer base {
   :root {
-    /* Light surfaces (used on auth + how-it-works sections) */
-    --background: 200 33% 98%;
-    --foreground: 200 25% 10%;
+    /* Dark-first surfaces — black dominant */
+    --background: 195 60% 4%;
+    --foreground: 180 25% 92%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 200 25% 10%;
+    --card: 195 55% 6%;
+    --card-foreground: 180 25% 92%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 200 25% 10%;
+    --popover: 195 55% 5%;
+    --popover-foreground: 180 25% 92%;
 
-    /* HiPro teal */
-    --primary: 174 86% 32%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 168 76% 42%;
+    /* Teal accent — kept but secondary to black */
+    --primary: 174 86% 38%;
+    --primary-foreground: 195 60% 4%;
+    --primary-glow: 168 76% 48%;
 
-    --secondary: 200 30% 94%;
-    --secondary-foreground: 200 25% 14%;
+    --secondary: 200 20% 12%;
+    --secondary-foreground: 180 25% 92%;
 
-    --muted: 200 25% 95%;
-    --muted-foreground: 200 12% 42%;
+    --muted: 195 15% 14%;
+    --muted-foreground: 190 15% 55%;
 
-    --accent: 174 70% 92%;
-    --accent-foreground: 174 86% 22%;
+    --accent: 174 40% 14%;
+    --accent-foreground: 174 86% 50%;
 
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 200 20% 88%;
-    --input: 200 20% 88%;
-    --ring: 174 86% 32%;
+    --border: 195 15% 18%;
+    --input: 195 15% 16%;
+    --ring: 174 86% 38%;
 
     --radius: 1rem;
 
-    /* Dark surfaces (used on hero + register left rail) */
-    --ink: 195 60% 6%;
+    /* Light mode overrides (used selectively) */
+    --ink: 195 60% 4%;
     --ink-foreground: 180 25% 92%;
-    --ink-muted: 190 20% 60%;
-    --ink-border: 190 30% 16%;
-    --ink-card: 195 55% 9%;
+    --ink-muted: 190 15% 55%;
+    --ink-border: 195 15% 20%;
+    --ink-card: 195 55% 7%;
 
     /* Effects */
     --gradient-hero: radial-gradient(
         1200px 600px at 80% 40%,
-        hsl(174 86% 32% / 0.35),
+        hsl(174 86% 32% / 0.25),
         transparent 60%
       ),
       radial-gradient(
         900px 500px at 10% 80%,
-        hsl(174 86% 22% / 0.4),
+        hsl(174 86% 22% / 0.2),
         transparent 60%
       ),
-      linear-gradient(180deg, hsl(195 60% 5%), hsl(195 60% 7%));
+      linear-gradient(180deg, hsl(195 60% 2%), hsl(195 60% 5%));
     --gradient-card: linear-gradient(
       135deg,
-      hsl(195 55% 11%),
-      hsl(195 55% 7%)
+      hsl(195 55% 8%),
+      hsl(195 55% 4%)
     );
     --gradient-primary: linear-gradient(
       135deg,
@@ -71,15 +71,15 @@
       hsl(var(--primary-glow))
     );
 
-    --shadow-glow: 0 30px 80px -20px hsl(174 86% 32% / 0.45);
-    --shadow-card: 0 20px 50px -20px hsl(195 60% 4% / 0.6);
-    --shadow-soft: 0 10px 30px -12px hsl(200 25% 20% / 0.15);
+    --shadow-glow: 0 30px 80px -20px hsl(174 86% 32% / 0.35);
+    --shadow-card: 0 20px 50px -20px hsl(195 60% 2% / 0.8);
+    --shadow-soft: 0 10px 30px -12px hsl(0 0% 0% / 0.4);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Dotted grid pattern for hero */
+    /* Subtle dot grid for dark backgrounds */
     --dot-grid: radial-gradient(
-      hsl(180 40% 80% / 0.08) 1px,
+      hsl(180 30% 70% / 0.06) 1px,
       transparent 1px
     );
   }
