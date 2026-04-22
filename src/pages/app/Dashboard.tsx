@@ -85,7 +85,13 @@ const Dashboard = () => {
       (sum, t) => sum + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)),
       0,
     );
-    return { total, pending, approved, balance };
+    const rewardsEarned = claims
+      .filter((c) => c.status === "approved" || c.status === "paid")
+      .reduce((sum, c) => sum + Number(c.payout_amount), 0);
+    const pendingRewards = claims
+      .filter((c) => c.status === "pending")
+      .reduce((sum, c) => sum + Number(c.payout_amount), 0);
+    return { total, pending, approved, balance, rewardsEarned, pendingRewards };
   }, [claims, txs]);
 
   const filtered = filter === "all" ? claims : claims.filter((c) => c.status === filter);
@@ -120,6 +126,24 @@ const Dashboard = () => {
             <p className="mt-1 text-5xl font-black tracking-tight">
               ${stats.balance.toFixed(2)}
             </p>
+            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-muted">
+                  Rewards earned
+                </p>
+                <p className="text-lg font-bold text-ink-foreground">
+                  ${stats.rewardsEarned.toFixed(2)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-muted">
+                  Pending rewards
+                </p>
+                <p className="text-lg font-bold text-ink-foreground">
+                  ${stats.pendingRewards.toFixed(2)}
+                </p>
+              </div>
+            </div>
             <p className="mt-6 font-mono text-sm tracking-widest text-ink-muted">
               {card
                 ? `•••• •••• •••• ${card.card_last4}`
