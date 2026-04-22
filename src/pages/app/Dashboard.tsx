@@ -85,7 +85,13 @@ const Dashboard = () => {
       (sum, t) => sum + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)),
       0,
     );
-    return { total, pending, approved, balance };
+    const rewardsEarned = claims
+      .filter((c) => c.status === "approved" || c.status === "paid")
+      .reduce((sum, c) => sum + Number(c.payout_amount), 0);
+    const pendingRewards = claims
+      .filter((c) => c.status === "pending")
+      .reduce((sum, c) => sum + Number(c.payout_amount), 0);
+    return { total, pending, approved, balance, rewardsEarned, pendingRewards };
   }, [claims, txs]);
 
   const filtered = filter === "all" ? claims : claims.filter((c) => c.status === filter);
