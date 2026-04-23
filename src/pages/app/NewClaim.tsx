@@ -14,10 +14,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
+const MODEL_NUMBER_LENGTH = 10; // e.g. AC-36U3T25U
+
 const claimSchema = z.object({
   saleDate: z.string().min(1, "Date of sale is required"),
   customerName: z.string().trim().min(1, "Customer name is required").max(120),
-  modelNumber: z.string().trim().min(1, "Model number is required").max(80),
+  modelNumber: z
+    .string()
+    .trim()
+    .length(
+      MODEL_NUMBER_LENGTH,
+      `Model number must be exactly ${MODEL_NUMBER_LENGTH} characters (e.g. AC-36U3T25U)`,
+    ),
   serialNumber: z.string().trim().min(1, "Serial number is required").max(80),
   notes: z.string().trim().max(500).optional(),
 });
@@ -157,10 +165,14 @@ const NewClaim = () => {
               <Input
                 id="modelNumber"
                 name="modelNumber"
-                placeholder="AVS-12UR4SVETG75"
+                placeholder="AC-36U3T25U"
+                maxLength={MODEL_NUMBER_LENGTH}
                 required
-                className="h-12 rounded-xl"
+                className="h-12 rounded-xl uppercase"
               />
+              <p className="text-xs text-muted-foreground">
+                {MODEL_NUMBER_LENGTH}-character product code (e.g. AC-36U3T25U).
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="serialNumber" className="text-xs uppercase tracking-wider">
