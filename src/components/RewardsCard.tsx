@@ -13,10 +13,6 @@ export const RewardsCard = ({
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
             HiPro Rewards Card
           </span>
-          <div className="flex gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-primary/80" />
-            <div className="h-2 w-2 rounded-full bg-primary/40" />
-          </div>
         </div>
 
         <div className="mt-10 text-5xl font-bold tracking-tight text-ink-foreground sm:text-6xl">
