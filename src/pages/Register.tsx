@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
 const phoneRegex = /^[+()\-.\s\d]{7,20}$/;
+
+const DISTRIBUTOR_CODES = [
+  "20143098JS",
+  "581392AS",
+  "514990CR",
+  "518143PL",
+  "514992PO",
+  "518163CF",
+  "518444DA",
+  "514797RS",
+  "518731VI",
+  "515218BA",
+] as const;
+const OTHER_CODE = "__OTHER__";
 
 const registerSchema = z
   .object({
@@ -45,43 +59,19 @@ const Register = () => {
   const navigate = useNavigate();
   const { user, isReady } = useAuth();
 
-  const [code, setCode] = useState("");
-  const [distributorName, setDistributorName] = useState<string | null>(null);
-  const [codeChecking, setCodeChecking] = useState(false);
-  const [codeValid, setCodeValid] = useState<boolean | null>(null);
+  const [selection, setSelection] = useState<string>("");
+  const [customCode, setCustomCode] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isOther = selection === OTHER_CODE;
+  const effectiveCode = useMemo(
+    () => (isOther ? customCode.trim().toUpperCase() : selection),
+    [isOther, customCode, selection],
+  );
 
   useEffect(() => {
     if (isReady && user) navigate("/app", { replace: true });
   }, [isReady, user, navigate]);
-
-  // Distributor autofill — debounced lookup
-  useEffect(() => {
-    const trimmed = code.trim();
-    if (!trimmed) {
-      setDistributorName(null);
-      setCodeValid(null);
-      return;
-    }
-    setCodeChecking(true);
-    const handle = setTimeout(async () => {
-      const { data, error } = await supabase
-        .from("distributors")
-        .select("name")
-        .ilike("code", trimmed)
-        .eq("active", true)
-        .maybeSingle();
-      setCodeChecking(false);
-      if (error || !data) {
-        setDistributorName(null);
-        setCodeValid(false);
-      } else {
-        setDistributorName(data.name);
-        setCodeValid(true);
-      }
-    }, 350);
-    return () => clearTimeout(handle);
-  }, [code]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -91,7 +81,7 @@ const Register = () => {
       lastName: fd.get("lastName"),
       email: fd.get("email"),
       phone: fd.get("phone"),
-      distributorCode: fd.get("distributorCode"),
+      distributorCode: effectiveCode,
       street: fd.get("street"),
       apt: fd.get("apt") || "",
       city: fd.get("city"),
@@ -102,14 +92,16 @@ const Register = () => {
       confirmPassword: fd.get("confirmPassword"),
     });
 
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Please fix the form");
+    if (!selection) {
+      toast.error("Please select your distributor");
       return;
     }
-    if (codeValid === false) {
-      toast.error("Distributor code not recognized", {
-        description: "Double-check the code provided by your distributor.",
-      });
+    if (isOther && !customCode.trim()) {
+      toast.error("Enter your distributor code");
+      return;
+    }
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please fix the form");
       return;
     }
 
@@ -208,53 +200,44 @@ const Register = () => {
 
             <div className="space-y-2">
               <Label htmlFor="distributorCode" className="text-xs uppercase tracking-wider">
-                Distributor code
+                Distributor / Customer number
               </Label>
-              <div className="relative">
-                <Input
-                  id="distributorCode"
-                  name="distributorCode"
-                  placeholder="LV12523"
-                  required
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  className={cn(
-                    "h-12 rounded-xl bg-card pr-12",
-                    codeValid === true && "border-primary",
-                    codeValid === false && "border-destructive",
-                  )}
-                />
-                {!codeChecking && codeValid === true && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                    <Check className="h-4 w-4" strokeWidth={3} />
-                  </span>
-                )}
-              </div>
-              <div className="space-y-0.5 text-xs">
-                {codeChecking && (
-                  <p className="text-muted-foreground">Looking up distributor…</p>
-                )}
-                {!codeChecking && codeValid === true && (
-                  <>
-                    <p className="font-semibold text-primary">
-                      Authorized distributor verified
-                    </p>
-                    <p className="text-muted-foreground">
-                      Provided by your authorized Hisense distributor.
-                    </p>
-                  </>
-                )}
-                {!codeChecking && codeValid === false && (
-                  <p className="text-destructive">
-                    Code not recognized. Confirm with your distributor.
+              <Select value={selection} onValueChange={setSelection}>
+                <SelectTrigger id="distributorCode" className="h-12 rounded-xl bg-card">
+                  <SelectValue placeholder="Select your customer number" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DISTRIBUTOR_CODES.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={OTHER_CODE}>
+                    Other / I do not know my customer number
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              {isOther && (
+                <div className="space-y-2 pt-2">
+                  <Input
+                    placeholder="Enter your distributor code"
+                    value={customCode}
+                    onChange={(e) => setCustomCode(e.target.value.toUpperCase())}
+                    maxLength={40}
+                    className="h-12 rounded-xl bg-card"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We will review this code to ensure it is eligible.
                   </p>
-                )}
-                {!codeChecking && codeValid === null && (
-                  <p className="text-muted-foreground">
-                    Provided by your authorized Hisense distributor.
-                  </p>
-                )}
-              </div>
+                </div>
+              )}
+
+              {!isOther && (
+                <p className="text-xs text-muted-foreground">
+                  Provided by your authorized Hisense distributor.
+                </p>
+              )}
             </div>
 
             <div className="border-t border-border pt-6">
