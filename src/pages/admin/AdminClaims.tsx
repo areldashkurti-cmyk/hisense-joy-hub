@@ -30,6 +30,8 @@ import {
   generateCvv,
 } from "@/lib/card";
 
+type ValidationStatus = "not_run" | "valid" | "flagged" | "missing_invoice" | "error";
+
 type ClaimRow = {
   id: string;
   user_id: string;
@@ -42,6 +44,10 @@ type ClaimRow = {
   proof_path: string | null;
   notes: string | null;
   submitted_at: string;
+  validation_status: ValidationStatus;
+  validation_details: Record<string, unknown> | null;
+  invoice_date: string | null;
+  invoice_dealer: string | null;
 };
 
 type ProfileLite = {
