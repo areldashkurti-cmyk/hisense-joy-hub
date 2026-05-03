@@ -151,6 +151,50 @@ const AdminReports = () => {
 
         <Card className="p-6">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+            AI invoice validation
+          </h2>
+          <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+            {(["valid", "flagged", "missing_invoice", "not_run", "error"] as const).map((v) => (
+              <div key={v} className="rounded-xl border border-border bg-secondary/30 p-3">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                  {v.replace("_", " ")}
+                </p>
+                <p className="mt-1 text-2xl font-bold">{stats.byValidation[v] ?? 0}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+            Most-selected series
+          </h2>
+          <div className="mt-5 space-y-3">
+            {topSeries.length === 0 && (
+              <p className="text-sm text-muted-foreground">No data yet.</p>
+            )}
+            {topSeries.map(({ series, count }) => {
+              const topMax = topSeries[0]?.count ?? 1;
+              return (
+                <div key={series}>
+                  <div className="mb-1 flex items-baseline justify-between text-sm">
+                    <span>{series}</span>
+                    <span className="font-mono text-muted-foreground">{count}</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className="h-full bg-primary transition-all"
+                      style={{ width: `${(count / topMax) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
             Export
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
