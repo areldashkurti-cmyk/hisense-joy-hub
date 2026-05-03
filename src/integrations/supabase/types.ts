@@ -19,45 +19,68 @@ export type Database = {
           customer_name: string
           decided_at: string | null
           id: string
+          invoice_date: string | null
+          invoice_dealer: string | null
           model_number: string
           notes: string | null
           payout_amount: number
+          product_id: string | null
           proof_path: string | null
           sale_date: string
           serial_number: string
           status: Database["public"]["Enums"]["claim_status"]
           submitted_at: string
           user_id: string
+          validation_details: Json | null
+          validation_status: Database["public"]["Enums"]["validation_status"]
         }
         Insert: {
           customer_name: string
           decided_at?: string | null
           id?: string
+          invoice_date?: string | null
+          invoice_dealer?: string | null
           model_number: string
           notes?: string | null
           payout_amount?: number
+          product_id?: string | null
           proof_path?: string | null
           sale_date: string
           serial_number: string
           status?: Database["public"]["Enums"]["claim_status"]
           submitted_at?: string
           user_id: string
+          validation_details?: Json | null
+          validation_status?: Database["public"]["Enums"]["validation_status"]
         }
         Update: {
           customer_name?: string
           decided_at?: string | null
           id?: string
+          invoice_date?: string | null
+          invoice_dealer?: string | null
           model_number?: string
           notes?: string | null
           payout_amount?: number
+          product_id?: string | null
           proof_path?: string | null
           sale_date?: string
           serial_number?: string
           status?: Database["public"]["Enums"]["claim_status"]
           submitted_at?: string
           user_id?: string
+          validation_details?: Json | null
+          validation_status?: Database["public"]["Enums"]["validation_status"]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "claims_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       distributors: {
         Row: {
@@ -204,6 +227,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      products: {
+        Row: {
+          active: boolean
+          category: string | null
+          compatible_model: string | null
+          created_at: string
+          ddp_list: number | null
+          id: string
+          model_number: string
+          payout_rate: number | null
+          product_type: string | null
+          series: string
+          size: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string | null
+          compatible_model?: string | null
+          created_at?: string
+          ddp_list?: number | null
+          id?: string
+          model_number: string
+          payout_rate?: number | null
+          product_type?: string | null
+          series: string
+          size?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category?: string | null
+          compatible_model?: string | null
+          created_at?: string
+          ddp_list?: number | null
+          id?: string
+          model_number?: string
+          payout_rate?: number | null
+          product_type?: string | null
+          series?: string
+          size?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -408,6 +476,7 @@ export type Database = {
       payout_status: "pending" | "processing" | "settled" | "failed"
       ticket_status: "open" | "in_progress" | "closed"
       transaction_type: "credit" | "debit"
+      validation_status: "not_run" | "passed" | "flagged" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -540,6 +609,7 @@ export const Constants = {
       payout_status: ["pending", "processing", "settled", "failed"],
       ticket_status: ["open", "in_progress", "closed"],
       transaction_type: ["credit", "debit"],
+      validation_status: ["not_run", "passed", "flagged", "failed"],
     },
   },
 } as const
