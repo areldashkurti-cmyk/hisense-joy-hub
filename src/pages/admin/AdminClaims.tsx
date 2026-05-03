@@ -227,6 +227,7 @@ const AdminClaims = () => {
                     <th className="px-4 py-3 font-semibold">Model</th>
                     <th className="px-4 py-3 font-semibold">Amount</th>
                     <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold">AI check</th>
                     <th className="px-4 py-3 font-semibold text-right">Action</th>
                   </tr>
                 </thead>
@@ -250,6 +251,11 @@ const AdminClaims = () => {
                         </td>
                         <td className="px-4 py-3">
                           <Badge className={statusStyle[c.status]}>{c.status}</Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge className={validationStyle[c.validation_status]}>
+                            {c.validation_status.replace("_", " ")}
+                          </Badge>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <Button size="sm" variant="outline" onClick={() => openClaim(c)}>
