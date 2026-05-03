@@ -57,6 +57,14 @@ type ProfileLite = {
   email: string | null;
 };
 
+const validationStyle: Record<ValidationStatus, string> = {
+  not_run: "bg-secondary text-secondary-foreground",
+  valid: "bg-primary/15 text-primary",
+  flagged: "bg-destructive/15 text-destructive",
+  missing_invoice: "bg-muted text-muted-foreground",
+  error: "bg-muted text-muted-foreground",
+};
+
 const statusStyle: Record<ClaimRow["status"], string> = {
   pending: "bg-secondary text-secondary-foreground",
   approved: "bg-primary/15 text-primary",
