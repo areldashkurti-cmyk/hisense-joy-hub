@@ -49,6 +49,11 @@ const AdminReports = () => {
       acc[c.status] = (acc[c.status] ?? 0) + 1;
       return acc;
     }, {});
+    const byValidation = claims.reduce<Record<string, number>>((acc, c) => {
+      const v = (c.validation_status as string) ?? "not_run";
+      acc[v] = (acc[v] ?? 0) + 1;
+      return acc;
+    }, {});
     const totalPaidOut = payouts
       .filter((p) => p.status === "settled")
       .reduce((s, p) => s + Number(p.amount), 0);
@@ -56,10 +61,31 @@ const AdminReports = () => {
       .filter((p) => p.status === "pending" || p.status === "processing")
       .reduce((s, p) => s + Number(p.amount), 0);
     const totalClaimsValue = claims.reduce((s, c) => s + Number(c.payout_amount), 0);
-    return { byStatus, totalPaidOut, pendingPayouts, totalClaimsValue };
+    return { byStatus, byValidation, totalPaidOut, pendingPayouts, totalClaimsValue };
   }, [claims, payouts]);
 
   const max = Math.max(...Object.values(stats.byStatus), 1);
+
+  const { data: topSeries = [] } = useQuery({
+    queryKey: ["report-top-series"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("claims")
+        .select("product_id, products!inner(series)")
+        .not("product_id", "is", null)
+        .limit(2000);
+      const counts = new Map<string, number>();
+      // deno-lint-ignore no-explicit-any
+      (data ?? []).forEach((row: any) => {
+        const s = row.products?.series;
+        if (s) counts.set(s, (counts.get(s) ?? 0) + 1);
+      });
+      return Array.from(counts.entries())
+        .map(([series, count]) => ({ series, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 8);
+    },
+  });
 
   return (
     <AdminShell>
