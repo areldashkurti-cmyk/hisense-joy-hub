@@ -199,7 +199,7 @@ const Dashboard = () => {
                 <p className="text-muted-foreground">
                   No claims yet.{" "}
                   <Link to="/app/claims/new" className="font-semibold text-primary hover:underline">
-                    Submit your first one.
+                    Enter new claim
                   </Link>
                 </p>
               </Card>
