@@ -136,18 +136,27 @@ const NewClaim = () => {
         .upload(path, file, { upsert: false, contentType: file.type });
       if (upErr) throw upErr;
 
-      const { error: insErr } = await supabase.from("claims").insert({
-        user_id: user.id,
-        sale_date: parsed.data.saleDate,
-        customer_name: parsed.data.customerName,
-        product_id: selectedProduct.id,
-        model_number: selectedProduct.model_number,
-        serial_number: parsed.data.serialNumber,
-        notes: parsed.data.notes ?? null,
-        proof_path: path,
-        payout_amount: selectedProduct.payout_rate ?? 0,
-      });
+      const { data: inserted, error: insErr } = await supabase
+        .from("claims")
+        .insert({
+          user_id: user.id,
+          sale_date: parsed.data.saleDate,
+          customer_name: parsed.data.customerName,
+          product_id: selectedProduct.id,
+          model_number: selectedProduct.model_number,
+          serial_number: parsed.data.serialNumber,
+          notes: parsed.data.notes ?? null,
+          proof_path: path,
+          payout_amount: selectedProduct.payout_rate ?? 0,
+        })
+        .select("id")
+        .single();
       if (insErr) throw insErr;
+
+      // Fire-and-forget AI validation
+      if (inserted?.id) {
+        supabase.functions.invoke("validate-claim", { body: { claim_id: inserted.id } }).catch(() => {});
+      }
 
       toast.success("Claim submitted!", {
         description: "We'll review and notify you when there's an update.",
