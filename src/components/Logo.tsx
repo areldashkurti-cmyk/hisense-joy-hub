@@ -1,40 +1,58 @@
 import { cn } from "@/lib/utils";
+import logoTeal from "@/assets/hisense-logo.webp";
+import logoWhite from "@/assets/hisense-logo-white.webp";
 
 interface LogoProps {
   className?: string;
   variant?: "light" | "dark";
   size?: "sm" | "md" | "lg";
+  showTagline?: boolean;
 }
 
-export const Logo = ({ className, variant = "light", size = "md" }: LogoProps) => {
-  const textColor =
-    variant === "light" ? "text-ink-foreground" : "text-foreground";
+export const Logo = ({
+  className,
+  variant = "light",
+  size = "md",
+  showTagline = true,
+}: LogoProps) => {
+  // "light" = on dark background → use white logo. "dark" = on light bg → teal logo.
+  const src = variant === "light" ? logoWhite : logoTeal;
 
   const sizeClass = {
-    sm: "text-lg",
-    md: "text-2xl",
-    lg: "text-4xl",
+    sm: "h-6",
+    md: "h-9",
+    lg: "h-12",
   }[size];
 
-  const subClass = {
-    sm: "text-[9px]",
-    md: "text-xs",
-    lg: "text-sm",
+  const taglineClass = {
+    sm: "text-[8px]",
+    md: "text-[10px]",
+    lg: "text-xs",
   }[size];
+
+  const taglineColor =
+    variant === "light" ? "text-ink-foreground/80" : "text-foreground/70";
 
   return (
     <div className={cn("inline-flex flex-col items-start leading-none", className)}>
-      <span className={cn("font-black tracking-tighter", sizeClass, textColor)}>
-        Hisense
-      </span>
-      <span
-        className={cn(
-          "mt-1 font-semibold uppercase tracking-[0.25em] text-primary",
-          subClass,
-        )}
-      >
-        Rewards
-      </span>
+      <img
+        src={src}
+        alt="Hisense"
+        className={cn("w-auto object-contain", sizeClass)}
+        loading="eager"
+        decoding="async"
+      />
+      {showTagline && (
+        <span
+          className={cn(
+            "mt-1.5 font-semibold uppercase tracking-[0.18em]",
+            taglineClass,
+            taglineColor,
+          )}
+        >
+          Hi-PRO Contractor Rewards
+        </span>
+      )}
     </div>
   );
 };

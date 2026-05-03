@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2, Upload, FileCheck2 } from "lucide-react";
 import { z } from "zod";
 import { format } from "date-fns";
@@ -9,49 +10,93 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
-const MODEL_NUMBER_LENGTH = 10; // e.g. AC-36U3T25U
-
 const claimSchema = z.object({
   saleDate: z.string().min(1, "Date of sale is required"),
   customerName: z.string().trim().min(1, "Customer name is required").max(120),
-  modelNumber: z
-    .string()
-    .trim()
-    .length(
-      MODEL_NUMBER_LENGTH,
-      `Model number must be exactly ${MODEL_NUMBER_LENGTH} characters (e.g. AC-36U3T25U)`,
-    ),
+  productId: z.string().uuid("Please select a product"),
   serialNumber: z.string().trim().min(1, "Serial number is required").max(80),
   notes: z.string().trim().max(500).optional(),
 });
 
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
-const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_BYTES = 10 * 1024 * 1024;
+
+type Product = {
+  id: string;
+  series: string;
+  category: string | null;
+  size: string | null;
+  model_number: string;
+  payout_rate: number | null;
+};
 
 const NewClaim = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [series, setSeries] = useState<string>("");
+  const [size, setSize] = useState<string>("");
+  const [productId, setProductId] = useState<string>("");
+
+  const { data: products = [] } = useQuery({
+    queryKey: ["products-active"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, series, category, size, model_number, payout_rate")
+        .eq("active", true)
+        .order("series")
+        .order("size")
+        .limit(2000);
+      if (error) throw error;
+      return (data ?? []) as Product[];
+    },
+  });
+
+  const seriesList = useMemo(
+    () => Array.from(new Set(products.map((p) => p.series))).sort(),
+    [products],
+  );
+
+  const sizesForSeries = useMemo(() => {
+    if (!series) return [];
+    const sizes = products
+      .filter((p) => p.series === series)
+      .map((p) => p.size ?? "—");
+    return Array.from(new Set(sizes));
+  }, [products, series]);
+
+  const matchingProducts = useMemo(() => {
+    if (!series || !size) return [];
+    return products.filter(
+      (p) => p.series === series && (p.size ?? "—") === size,
+    );
+  }, [products, series, size]);
+
+  const selectedProduct = matchingProducts.find((p) => p.id === productId);
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
     if (!f) return setFile(null);
     if (!ALLOWED_TYPES.includes(f.type)) {
-      toast.error("Unsupported file type", {
-        description: "Upload a PDF, JPG, or PNG.",
-      });
+      toast.error("Unsupported file type", { description: "Upload a PDF, JPG, or PNG." });
       return;
     }
     if (f.size > MAX_BYTES) {
-      toast.error("File too large", {
-        description: "Max size is 10 MB.",
-      });
+      toast.error("File too large", { description: "Max size is 10 MB." });
       return;
     }
     setFile(f);
@@ -69,7 +114,7 @@ const NewClaim = () => {
     const parsed = claimSchema.safeParse({
       saleDate: fd.get("saleDate"),
       customerName: fd.get("customerName"),
-      modelNumber: fd.get("modelNumber"),
+      productId,
       serialNumber: fd.get("serialNumber"),
       notes: (fd.get("notes") as string) || undefined,
     });
@@ -77,10 +122,13 @@ const NewClaim = () => {
       toast.error(parsed.error.issues[0]?.message ?? "Please fix the form");
       return;
     }
+    if (!selectedProduct) {
+      toast.error("Please complete the product selection");
+      return;
+    }
 
     setSubmitting(true);
     try {
-      // 1. Upload file to user's folder
       const ext = file.name.split(".").pop();
       const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage
@@ -88,15 +136,16 @@ const NewClaim = () => {
         .upload(path, file, { upsert: false, contentType: file.type });
       if (upErr) throw upErr;
 
-      // 2. Insert claim
       const { error: insErr } = await supabase.from("claims").insert({
         user_id: user.id,
         sale_date: parsed.data.saleDate,
         customer_name: parsed.data.customerName,
-        model_number: parsed.data.modelNumber,
+        product_id: selectedProduct.id,
+        model_number: selectedProduct.model_number,
         serial_number: parsed.data.serialNumber,
         notes: parsed.data.notes ?? null,
         proof_path: path,
+        payout_amount: selectedProduct.payout_rate ?? 0,
       });
       if (insErr) throw insErr;
 
@@ -157,35 +206,148 @@ const NewClaim = () => {
             </div>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="modelNumber" className="text-xs uppercase tracking-wider">
-                Model number
-              </Label>
-              <Input
-                id="modelNumber"
-                name="modelNumber"
-                placeholder="AC-36U3T25U"
-                maxLength={MODEL_NUMBER_LENGTH}
-                required
-                className="h-12 rounded-xl uppercase"
-              />
-              <p className="text-xs text-muted-foreground">
-                {MODEL_NUMBER_LENGTH}-character product code (e.g. AC-36U3T25U).
+          {/* Product selection */}
+          <div className="rounded-2xl border border-border bg-secondary/30 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              Product
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Select your series and size — we'll fill in the model number for you.
+            </p>
+
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              <div className="space-y-2">
+                <Label className="text-xs uppercase tracking-wider">
+                  Step 1 · Product series
+                </Label>
+                <Select
+                  value={series}
+                  onValueChange={(v) => {
+                    setSeries(v);
+                    setSize("");
+                    setProductId("");
+                  }}
+                >
+                  <SelectTrigger className="h-12 rounded-xl bg-card">
+                    <SelectValue placeholder="Select series" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    {seriesList.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs uppercase tracking-wider">
+                  Step 2 · Size
+                </Label>
+                <Select
+                  value={size}
+                  onValueChange={(v) => {
+                    setSize(v);
+                    setProductId("");
+                  }}
+                  disabled={!series}
+                >
+                  <SelectTrigger className="h-12 rounded-xl bg-card">
+                    <SelectValue placeholder={series ? "Select size" : "Select series first"} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    {sizesForSeries.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs uppercase tracking-wider">
+                  Step 3 · Model number
+                </Label>
+                {matchingProducts.length > 1 ? (
+                  <Select value={productId} onValueChange={setProductId}>
+                    <SelectTrigger className="h-12 rounded-xl bg-card">
+                      <SelectValue placeholder="Select model" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {matchingProducts.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          <span className="font-mono">{p.model_number}</span>
+                          {p.category ? (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              · {p.category}
+                            </span>
+                          ) : null}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    value={
+                      matchingProducts[0]?.model_number ??
+                      (size ? "" : "")
+                    }
+                    readOnly
+                    placeholder={
+                      series && size
+                        ? matchingProducts.length === 0
+                          ? "Contact Administrator"
+                          : ""
+                        : "Auto-filled"
+                    }
+                    className={cn(
+                      "h-12 rounded-xl bg-card font-mono",
+                      matchingProducts.length === 0 && series && size && "border-destructive text-destructive",
+                    )}
+                    onFocus={() => {
+                      if (matchingProducts.length === 1) setProductId(matchingProducts[0].id);
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            {series && size && matchingProducts.length === 0 && (
+              <p className="mt-3 text-sm text-destructive">
+                No matching product. Please contact your administrator.
               </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="serialNumber" className="text-xs uppercase tracking-wider">
-                Serial number
-              </Label>
-              <Input
-                id="serialNumber"
-                name="serialNumber"
-                placeholder="HSN12345678"
-                required
-                className="h-12 rounded-xl"
-              />
-            </div>
+            )}
+
+            {selectedProduct && (
+              <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+                <span className="font-mono font-semibold text-primary">
+                  {selectedProduct.model_number}
+                </span>
+                {selectedProduct.category && (
+                  <span className="text-muted-foreground">· {selectedProduct.category}</span>
+                )}
+                {selectedProduct.payout_rate != null && (
+                  <span className="ml-auto font-semibold">
+                    Payout: ${Number(selectedProduct.payout_rate).toFixed(2)}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="serialNumber" className="text-xs uppercase tracking-wider">
+              Serial number
+            </Label>
+            <Input
+              id="serialNumber"
+              name="serialNumber"
+              placeholder="HSN12345678"
+              required
+              className="h-12 rounded-xl"
+            />
           </div>
 
           <div className="space-y-2">
@@ -242,14 +404,10 @@ const NewClaim = () => {
           <Button
             type="submit"
             variant="hero"
-            disabled={submitting}
+            disabled={submitting || !selectedProduct}
             className="h-14 w-full rounded-2xl text-base"
           >
-            {submitting ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              "Submit claim"
-            )}
+            {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Submit claim"}
           </Button>
         </form>
       </Card>

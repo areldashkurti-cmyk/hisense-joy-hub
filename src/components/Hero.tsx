@@ -17,7 +17,7 @@ export const Hero = () => {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-foreground/90">
-                Hisense Comfort · Pro Partner Program
+                Hi-PRO Contractor Rewards Program
               </span>
             </div>
 
@@ -26,7 +26,7 @@ export const Hero = () => {
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
-              The HiPro Contractor Rewards Program turns every qualified
+              The Hi-PRO Contractor Rewards Program turns every qualified
               installation into instant earnings. Submit a claim, track
               approvals in real time, and redeem from your rewards card.
             </p>
