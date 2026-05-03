@@ -30,6 +30,8 @@ import {
   generateCvv,
 } from "@/lib/card";
 
+type ValidationStatus = "not_run" | "valid" | "flagged" | "missing_invoice" | "error";
+
 type ClaimRow = {
   id: string;
   user_id: string;
@@ -42,6 +44,10 @@ type ClaimRow = {
   proof_path: string | null;
   notes: string | null;
   submitted_at: string;
+  validation_status: ValidationStatus;
+  validation_details: Record<string, unknown> | null;
+  invoice_date: string | null;
+  invoice_dealer: string | null;
 };
 
 type ProfileLite = {
@@ -49,6 +55,14 @@ type ProfileLite = {
   first_name: string | null;
   last_name: string | null;
   email: string | null;
+};
+
+const validationStyle: Record<ValidationStatus, string> = {
+  not_run: "bg-secondary text-secondary-foreground",
+  valid: "bg-primary/15 text-primary",
+  flagged: "bg-destructive/15 text-destructive",
+  missing_invoice: "bg-muted text-muted-foreground",
+  error: "bg-muted text-muted-foreground",
 };
 
 const statusStyle: Record<ClaimRow["status"], string> = {
@@ -213,6 +227,7 @@ const AdminClaims = () => {
                     <th className="px-4 py-3 font-semibold">Model</th>
                     <th className="px-4 py-3 font-semibold">Amount</th>
                     <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold">AI check</th>
                     <th className="px-4 py-3 font-semibold text-right">Action</th>
                   </tr>
                 </thead>
@@ -236,6 +251,11 @@ const AdminClaims = () => {
                         </td>
                         <td className="px-4 py-3">
                           <Badge className={statusStyle[c.status]}>{c.status}</Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge className={validationStyle[c.validation_status]}>
+                            {c.validation_status.replace("_", " ")}
+                          </Badge>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <Button size="sm" variant="outline" onClick={() => openClaim(c)}>
@@ -301,6 +321,44 @@ const AdminClaims = () => {
                 ) : (
                   <p className="mt-2 text-sm text-muted-foreground">No file attached.</p>
                 )}
+              </div>
+
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wider">AI invoice check</Label>
+                  <Badge className={validationStyle[active.validation_status]}>
+                    {active.validation_status.replace("_", " ")}
+                  </Badge>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <p className="text-muted-foreground">Invoice date</p>
+                    <p className="font-medium">{active.invoice_date ?? "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Dealer</p>
+                    <p className="font-medium">{active.invoice_dealer ?? "—"}</p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3"
+                  onClick={async () => {
+                    toast.message("Running AI check…");
+                    const { error } = await supabase.functions.invoke("validate-claim", {
+                      body: { claim_id: active.id },
+                    });
+                    if (error) toast.error(error.message);
+                    else {
+                      toast.success("AI check complete");
+                      qc.invalidateQueries({ queryKey: ["admin-claims"] });
+                      setActive(null);
+                    }
+                  }}
+                >
+                  Re-run AI check
+                </Button>
               </div>
 
               <div>
