@@ -323,6 +323,44 @@ const AdminClaims = () => {
                 )}
               </div>
 
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wider">AI invoice check</Label>
+                  <Badge className={validationStyle[active.validation_status]}>
+                    {active.validation_status.replace("_", " ")}
+                  </Badge>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <p className="text-muted-foreground">Invoice date</p>
+                    <p className="font-medium">{active.invoice_date ?? "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Dealer</p>
+                    <p className="font-medium">{active.invoice_dealer ?? "—"}</p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3"
+                  onClick={async () => {
+                    toast.message("Running AI check…");
+                    const { error } = await supabase.functions.invoke("validate-claim", {
+                      body: { claim_id: active.id },
+                    });
+                    if (error) toast.error(error.message);
+                    else {
+                      toast.success("AI check complete");
+                      qc.invalidateQueries({ queryKey: ["admin-claims"] });
+                      setActive(null);
+                    }
+                  }}
+                >
+                  Re-run AI check
+                </Button>
+              </div>
+
               <div>
                 <Label htmlFor="notes" className="text-xs uppercase tracking-wider">
                   Internal notes
