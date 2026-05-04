@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import logoTeal from "@/assets/hisense-logo.webp";
-import logoWhite from "@/assets/hisense-logo-white.webp";
+import logoTeal from "@/assets/hisense-logo.png";
+import logoWhite from "@/assets/hisense-logo-white.png";
 
 interface LogoProps {
   className?: string;
