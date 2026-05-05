@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 const claimSchema = z.object({
   saleDate: z.string().min(1, "Date of sale is required"),
   customerName: z.string().trim().min(1, "Customer name is required").max(120),
-  productId: z.string().uuid("Please select a product"),
+  modelNumber: z.string().trim().min(1, "Model number is required").max(80),
   serialNumber: z.string().trim().min(1, "Serial number is required").max(80),
   notes: z.string().trim().max(500).optional(),
 });
