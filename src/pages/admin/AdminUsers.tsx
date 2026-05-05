@@ -38,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { supabase } from "@/integrations/supabase/client";
 import { formatCardNumber } from "@/lib/card";
 import { useAuth } from "@/hooks/useAuth";
