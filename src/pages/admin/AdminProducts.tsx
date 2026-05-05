@@ -23,11 +23,9 @@ type Product = {
   id: string;
   series: string;
   category: string | null;
-  size: string | null;
   model_number: string;
   compatible_model: string | null;
   product_type: string | null;
-  ddp_list: number | null;
   payout_rate: number | null;
   active: boolean;
 };
@@ -35,11 +33,9 @@ type Product = {
 const schema = z.object({
   series: z.string().trim().min(1).max(60),
   category: z.string().trim().max(60).optional().or(z.literal("")),
-  size: z.string().trim().max(40).optional().or(z.literal("")),
   model_number: z.string().trim().min(1).max(60),
   compatible_model: z.string().trim().max(80).optional().or(z.literal("")),
   product_type: z.string().trim().max(40).optional().or(z.literal("")),
-  ddp_list: z.coerce.number().nonnegative().optional().or(z.nan()),
   payout_rate: z.coerce.number().nonnegative().optional().or(z.nan()),
   active: z.boolean(),
 });
@@ -48,11 +44,9 @@ const blank: Product = {
   id: "",
   series: "",
   category: "",
-  size: "",
   model_number: "",
   compatible_model: "",
   product_type: "",
-  ddp_list: null,
   payout_rate: null,
   active: true,
 };
@@ -67,9 +61,9 @@ const AdminProducts = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select("id,series,category,model_number,compatible_model,product_type,payout_rate,active")
         .order("series")
-        .order("size")
+        .order("model_number")
         .limit(2000);
       if (error) throw error;
       return (data ?? []) as Product[];
@@ -80,7 +74,7 @@ const AdminProducts = () => {
     const s = q.trim().toLowerCase();
     if (!s) return products;
     return products.filter((p) =>
-      [p.series, p.category, p.size, p.model_number, p.compatible_model, p.product_type]
+      [p.series, p.category, p.model_number, p.compatible_model, p.product_type]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(s)),
     );
@@ -93,11 +87,9 @@ const AdminProducts = () => {
       const payload = {
         series: parsed.data.series,
         category: parsed.data.category || null,
-        size: parsed.data.size || null,
         model_number: parsed.data.model_number,
         compatible_model: parsed.data.compatible_model || null,
         product_type: parsed.data.product_type || null,
-        ddp_list: Number.isFinite(parsed.data.ddp_list as number) ? parsed.data.ddp_list : null,
         payout_rate: Number.isFinite(parsed.data.payout_rate as number) ? parsed.data.payout_rate : null,
         active: parsed.data.active,
       };
@@ -148,7 +140,7 @@ const AdminProducts = () => {
         <div className="relative max-w-md flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search series, size, model #…"
+            placeholder="Search model #, series, category…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             className="h-11 pl-9"
@@ -165,11 +157,12 @@ const AdminProducts = () => {
             <table className="w-full text-sm">
               <thead className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-widest text-muted-foreground">
                 <tr>
+                  <th className="px-4 py-3 font-semibold">Hisense Model# to order</th>
+                  <th className="px-4 py-3 font-semibold">Compatible Model#</th>
                   <th className="px-4 py-3 font-semibold">Series</th>
-                  <th className="px-4 py-3 font-semibold">Size</th>
-                  <th className="px-4 py-3 font-semibold">Model #</th>
+                  <th className="px-4 py-3 font-semibold">Category</th>
                   <th className="px-4 py-3 font-semibold">Type</th>
-                  <th className="px-4 py-3 font-semibold">Payout</th>
+                  <th className="px-4 py-3 font-semibold">Payout Rate</th>
                   <th className="px-4 py-3 font-semibold">Active</th>
                   <th className="px-4 py-3 font-semibold text-right">Edit</th>
                 </tr>
@@ -177,10 +170,11 @@ const AdminProducts = () => {
               <tbody>
                 {filtered.map((p) => (
                   <tr key={p.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium">{p.series}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{p.size ?? "—"}</td>
                     <td className="px-4 py-3 font-mono text-xs">{p.model_number}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{p.product_type ?? p.category ?? "—"}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{p.compatible_model ?? "—"}</td>
+                    <td className="px-4 py-3 font-medium">{p.series}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{p.category ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{p.product_type ?? "—"}</td>
                     <td className="px-4 py-3">
                       {p.payout_rate != null ? `$${Number(p.payout_rate).toFixed(2)}` : "—"}
                     </td>
@@ -196,7 +190,7 @@ const AdminProducts = () => {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
+                    <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
                       No products match your search.
                     </td>
                   </tr>
@@ -214,32 +208,22 @@ const AdminProducts = () => {
           </DialogHeader>
           {editing && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Series *">
-                <Input value={editing.series} onChange={(e) => setEditing({ ...editing, series: e.target.value })} />
-              </Field>
-              <Field label="Size">
-                <Input value={editing.size ?? ""} onChange={(e) => setEditing({ ...editing, size: e.target.value })} />
-              </Field>
-              <Field label="Model number *">
+              <Field label="Hisense Model# to order *">
                 <Input value={editing.model_number} onChange={(e) => setEditing({ ...editing, model_number: e.target.value })} className="font-mono" />
               </Field>
-              <Field label="Compatible model">
-                <Input value={editing.compatible_model ?? ""} onChange={(e) => setEditing({ ...editing, compatible_model: e.target.value })} />
+              <Field label="Compatible Model#">
+                <Input value={editing.compatible_model ?? ""} onChange={(e) => setEditing({ ...editing, compatible_model: e.target.value })} className="font-mono" />
+              </Field>
+              <Field label="Series *">
+                <Input value={editing.series} onChange={(e) => setEditing({ ...editing, series: e.target.value })} />
               </Field>
               <Field label="Category">
                 <Input value={editing.category ?? ""} onChange={(e) => setEditing({ ...editing, category: e.target.value })} />
               </Field>
-              <Field label="Product type">
+              <Field label="Type">
                 <Input value={editing.product_type ?? ""} onChange={(e) => setEditing({ ...editing, product_type: e.target.value })} />
               </Field>
-              <Field label="DDP list ($)">
-                <Input
-                  type="number" step="0.01"
-                  value={editing.ddp_list ?? ""}
-                  onChange={(e) => setEditing({ ...editing, ddp_list: e.target.value === "" ? null : Number(e.target.value) })}
-                />
-              </Field>
-              <Field label="Payout rate ($)">
+              <Field label="Payout Rate ($)">
                 <Input
                   type="number" step="0.01"
                   value={editing.payout_rate ?? ""}
