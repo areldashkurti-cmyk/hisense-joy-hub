@@ -333,7 +333,7 @@ const NewClaim = () => {
           <Button
             type="submit"
             variant="hero"
-            disabled={submitting || !selectedProduct}
+            disabled={submitting}
             className="h-14 w-full rounded-2xl text-base"
           >
             {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Submit claim"}
