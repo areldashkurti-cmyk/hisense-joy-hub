@@ -105,16 +105,12 @@ const NewClaim = () => {
     const parsed = claimSchema.safeParse({
       saleDate: fd.get("saleDate"),
       customerName: fd.get("customerName"),
-      productId,
+      modelNumber: modelNumber,
       serialNumber: fd.get("serialNumber"),
       notes: (fd.get("notes") as string) || undefined,
     });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please fix the form");
-      return;
-    }
-    if (!selectedProduct) {
-      toast.error("Please complete the product selection");
       return;
     }
 
@@ -133,12 +129,12 @@ const NewClaim = () => {
           user_id: user.id,
           sale_date: parsed.data.saleDate,
           customer_name: parsed.data.customerName,
-          product_id: selectedProduct.id,
-          model_number: selectedProduct.model_number,
+          product_id: selectedProduct?.id ?? null,
+          model_number: parsed.data.modelNumber,
           serial_number: parsed.data.serialNumber,
           notes: parsed.data.notes ?? null,
           proof_path: path,
-          payout_amount: selectedProduct.payout_rate ?? 0,
+          payout_amount: selectedProduct?.payout_rate ?? 0,
         })
         .select("id")
         .single();
