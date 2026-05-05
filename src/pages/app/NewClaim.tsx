@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 const claimSchema = z.object({
   saleDate: z.string().min(1, "Date of sale is required"),
   customerName: z.string().trim().min(1, "Customer name is required").max(120),
-  productId: z.string().uuid("Please select a product"),
+  modelNumber: z.string().trim().min(1, "Model number is required").max(80),
   serialNumber: z.string().trim().min(1, "Serial number is required").max(80),
   notes: z.string().trim().max(500).optional(),
 });
@@ -48,8 +48,7 @@ const NewClaim = () => {
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [series, setSeries] = useState<string>("");
-  const [size, setSize] = useState<string>("");
-  const [productId, setProductId] = useState<string>("");
+  const [modelNumber, setModelNumber] = useState<string>("");
 
   const { data: products = [] } = useQuery({
     queryKey: ["products-active"],
@@ -59,7 +58,6 @@ const NewClaim = () => {
         .select("id, series, category, size, model_number, payout_rate")
         .eq("active", true)
         .order("series")
-        .order("size")
         .limit(2000);
       if (error) throw error;
       return (data ?? []) as Product[];
@@ -71,22 +69,15 @@ const NewClaim = () => {
     [products],
   );
 
-  const sizesForSeries = useMemo(() => {
-    if (!series) return [];
-    const sizes = products
-      .filter((p) => p.series === series)
-      .map((p) => p.size ?? "—");
-    return Array.from(new Set(sizes));
-  }, [products, series]);
-
-  const matchingProducts = useMemo(() => {
-    if (!series || !size) return [];
-    return products.filter(
-      (p) => p.series === series && (p.size ?? "—") === size,
+  const selectedProduct = useMemo(() => {
+    const m = modelNumber.trim().toLowerCase();
+    if (!m) return undefined;
+    return products.find(
+      (p) =>
+        p.model_number.toLowerCase() === m &&
+        (!series || p.series === series),
     );
-  }, [products, series, size]);
-
-  const selectedProduct = matchingProducts.find((p) => p.id === productId);
+  }, [products, series, modelNumber]);
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
@@ -114,16 +105,12 @@ const NewClaim = () => {
     const parsed = claimSchema.safeParse({
       saleDate: fd.get("saleDate"),
       customerName: fd.get("customerName"),
-      productId,
+      modelNumber: modelNumber,
       serialNumber: fd.get("serialNumber"),
       notes: (fd.get("notes") as string) || undefined,
     });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please fix the form");
-      return;
-    }
-    if (!selectedProduct) {
-      toast.error("Please complete the product selection");
       return;
     }
 
@@ -142,12 +129,12 @@ const NewClaim = () => {
           user_id: user.id,
           sale_date: parsed.data.saleDate,
           customer_name: parsed.data.customerName,
-          product_id: selectedProduct.id,
-          model_number: selectedProduct.model_number,
+          product_id: selectedProduct?.id ?? null,
+          model_number: parsed.data.modelNumber,
           serial_number: parsed.data.serialNumber,
           notes: parsed.data.notes ?? null,
           proof_path: path,
-          payout_amount: selectedProduct.payout_rate ?? 0,
+          payout_amount: selectedProduct?.payout_rate ?? 0,
         })
         .select("id")
         .single();
@@ -221,21 +208,17 @@ const NewClaim = () => {
               Product
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Select your series and size — we'll fill in the model number for you.
+              Select your series and enter the model number from your invoice.
             </p>
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs uppercase tracking-wider">
                   Step 1 · Product series
                 </Label>
                 <Select
                   value={series}
-                  onValueChange={(v) => {
-                    setSeries(v);
-                    setSize("");
-                    setProductId("");
-                  }}
+                  onValueChange={(v) => setSeries(v)}
                 >
                   <SelectTrigger className="h-12 rounded-xl bg-card">
                     <SelectValue placeholder="Select series" />
@@ -251,83 +234,20 @@ const NewClaim = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs uppercase tracking-wider">
-                  Step 2 · Size
+                <Label htmlFor="modelNumber" className="text-xs uppercase tracking-wider">
+                  Step 2 · Model number
                 </Label>
-                <Select
-                  value={size}
-                  onValueChange={(v) => {
-                    setSize(v);
-                    setProductId("");
-                  }}
-                  disabled={!series}
-                >
-                  <SelectTrigger className="h-12 rounded-xl bg-card">
-                    <SelectValue placeholder={series ? "Select size" : "Select series first"} />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    {sizesForSeries.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs uppercase tracking-wider">
-                  Step 3 · Model number
-                </Label>
-                {matchingProducts.length > 1 ? (
-                  <Select value={productId} onValueChange={setProductId}>
-                    <SelectTrigger className="h-12 rounded-xl bg-card">
-                      <SelectValue placeholder="Select model" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      {matchingProducts.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          <span className="font-mono">{p.model_number}</span>
-                          {p.category ? (
-                            <span className="ml-2 text-xs text-muted-foreground">
-                              · {p.category}
-                            </span>
-                          ) : null}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    value={
-                      matchingProducts[0]?.model_number ??
-                      (size ? "" : "")
-                    }
-                    readOnly
-                    placeholder={
-                      series && size
-                        ? matchingProducts.length === 0
-                          ? "Contact Administrator"
-                          : ""
-                        : "Auto-filled"
-                    }
-                    className={cn(
-                      "h-12 rounded-xl bg-card font-mono",
-                      matchingProducts.length === 0 && series && size && "border-destructive text-destructive",
-                    )}
-                    onFocus={() => {
-                      if (matchingProducts.length === 1) setProductId(matchingProducts[0].id);
-                    }}
-                  />
-                )}
+                <Input
+                  id="modelNumber"
+                  name="modelNumber"
+                  value={modelNumber}
+                  onChange={(e) => setModelNumber(e.target.value)}
+                  placeholder="Enter model number"
+                  required
+                  className="h-12 rounded-xl bg-card font-mono"
+                />
               </div>
             </div>
-
-            {series && size && matchingProducts.length === 0 && (
-              <p className="mt-3 text-sm text-destructive">
-                No matching product. Please contact your administrator.
-              </p>
-            )}
 
             {selectedProduct && (
               <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
