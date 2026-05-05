@@ -48,8 +48,7 @@ const NewClaim = () => {
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [series, setSeries] = useState<string>("");
-  const [size, setSize] = useState<string>("");
-  const [productId, setProductId] = useState<string>("");
+  const [modelNumber, setModelNumber] = useState<string>("");
 
   const { data: products = [] } = useQuery({
     queryKey: ["products-active"],
@@ -59,7 +58,6 @@ const NewClaim = () => {
         .select("id, series, category, size, model_number, payout_rate")
         .eq("active", true)
         .order("series")
-        .order("size")
         .limit(2000);
       if (error) throw error;
       return (data ?? []) as Product[];
@@ -71,22 +69,15 @@ const NewClaim = () => {
     [products],
   );
 
-  const sizesForSeries = useMemo(() => {
-    if (!series) return [];
-    const sizes = products
-      .filter((p) => p.series === series)
-      .map((p) => p.size ?? "—");
-    return Array.from(new Set(sizes));
-  }, [products, series]);
-
-  const matchingProducts = useMemo(() => {
-    if (!series || !size) return [];
-    return products.filter(
-      (p) => p.series === series && (p.size ?? "—") === size,
+  const selectedProduct = useMemo(() => {
+    const m = modelNumber.trim().toLowerCase();
+    if (!m) return undefined;
+    return products.find(
+      (p) =>
+        p.model_number.toLowerCase() === m &&
+        (!series || p.series === series),
     );
-  }, [products, series, size]);
-
-  const selectedProduct = matchingProducts.find((p) => p.id === productId);
+  }, [products, series, modelNumber]);
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
