@@ -1,19 +1,48 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Eye, EyeOff, Search } from "lucide-react";
+import { Eye, EyeOff, Pencil, Search, Trash2 } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCardNumber } from "@/lib/card";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 type Profile = {
   id: string;
@@ -21,8 +50,12 @@ type Profile = {
   last_name: string | null;
   email: string | null;
   phone: string | null;
+  street: string | null;
+  apt: string | null;
   city: string | null;
   state: string | null;
+  postal_code: string | null;
+  country: string | null;
   created_at: string;
 };
 
@@ -44,17 +77,26 @@ type Tx = {
   created_at: string;
 };
 
+type Role = "admin" | "contractor";
+
 const AdminUsers = () => {
+  const qc = useQueryClient();
+  const { user: currentUser } = useAuth();
   const [q, setQ] = useState("");
   const [active, setActive] = useState<Profile | null>(null);
   const [showFull, setShowFull] = useState(false);
+  const [editing, setEditing] = useState<Profile | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Profile> & { isAdmin?: boolean }>({});
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<Profile | null>(null);
+  const [deletingNow, setDeletingNow] = useState(false);
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["admin-users-profiles"],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, first_name, last_name, email, phone, city, state, created_at")
+        .select("id, first_name, last_name, email, phone, street, apt, city, state, postal_code, country, created_at")
         .order("created_at", { ascending: false });
       return (data ?? []) as Profile[];
     },
@@ -76,7 +118,19 @@ const AdminUsers = () => {
     },
   });
 
+  const { data: roles = [] } = useQuery({
+    queryKey: ["admin-users-roles"],
+    queryFn: async () => {
+      const { data } = await supabase.from("user_roles").select("user_id, role");
+      return (data ?? []) as { user_id: string; role: Role }[];
+    },
+  });
+
   const cardMap = new Map(cards.map((c) => [c.user_id, c]));
+  const adminSet = useMemo(
+    () => new Set(roles.filter((r) => r.role === "admin").map((r) => r.user_id)),
+    [roles],
+  );
 
   const balances = useMemo(() => {
     const m = new Map<string, number>();
@@ -110,6 +164,98 @@ const AdminUsers = () => {
         )
     : [];
   const activeBalance = active ? balances.get(active.id) ?? 0 : 0;
+
+  useEffect(() => {
+    if (editing) {
+      setEditForm({
+        first_name: editing.first_name ?? "",
+        last_name: editing.last_name ?? "",
+        email: editing.email ?? "",
+        phone: editing.phone ?? "",
+        street: editing.street ?? "",
+        apt: editing.apt ?? "",
+        city: editing.city ?? "",
+        state: editing.state ?? "",
+        postal_code: editing.postal_code ?? "",
+        country: editing.country ?? "",
+        isAdmin: adminSet.has(editing.id),
+      });
+    }
+  }, [editing, adminSet]);
+
+  const handleSave = async () => {
+    if (!editing) return;
+    setSaving(true);
+    try {
+      const { error: pErr } = await supabase
+        .from("profiles")
+        .update({
+          first_name: editForm.first_name || null,
+          last_name: editForm.last_name || null,
+          email: editForm.email || null,
+          phone: editForm.phone || null,
+          street: editForm.street || null,
+          apt: editForm.apt || null,
+          city: editForm.city || null,
+          state: editForm.state || null,
+          postal_code: editForm.postal_code || null,
+          country: editForm.country || null,
+        })
+        .eq("id", editing.id);
+      if (pErr) throw pErr;
+
+      const wasAdmin = adminSet.has(editing.id);
+      if (editForm.isAdmin && !wasAdmin) {
+        const { error } = await supabase
+          .from("user_roles")
+          .insert({ user_id: editing.id, role: "admin" });
+        if (error) throw error;
+      } else if (!editForm.isAdmin && wasAdmin) {
+        const { error } = await supabase
+          .from("user_roles")
+          .delete()
+          .eq("user_id", editing.id)
+          .eq("role", "admin");
+        if (error) throw error;
+      }
+
+      toast.success("User updated");
+      setEditing(null);
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["admin-users-profiles"] }),
+        qc.invalidateQueries({ queryKey: ["admin-users-roles"] }),
+      ]);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update user");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleting) return;
+    setDeletingNow(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-user", {
+        body: { user_id: deleting.id },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success("User deleted");
+      setDeleting(null);
+      setActive((a) => (a?.id === deleting.id ? null : a));
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["admin-users-profiles"] }),
+        qc.invalidateQueries({ queryKey: ["admin-users-cards"] }),
+        qc.invalidateQueries({ queryKey: ["admin-users-txs"] }),
+        qc.invalidateQueries({ queryKey: ["admin-users-roles"] }),
+      ]);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete user");
+    } finally {
+      setDeletingNow(false);
+    }
+  };
 
   return (
     <AdminShell>
@@ -145,21 +291,35 @@ const AdminUsers = () => {
               <tr>
                 <th className="px-4 py-3 font-semibold">Contractor</th>
                 <th className="px-4 py-3 font-semibold">Email</th>
+                <th className="px-4 py-3 font-semibold">Role</th>
                 <th className="px-4 py-3 font-semibold">Card</th>
                 <th className="px-4 py-3 font-semibold">Balance</th>
                 <th className="px-4 py-3 font-semibold">Joined</th>
-                <th className="px-4 py-3 font-semibold text-right">Action</th>
+                <th className="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((p) => {
                 const card = cardMap.get(p.id);
+                const isAdmin = adminSet.has(p.id);
+                const isSelf = currentUser?.id === p.id;
                 return (
                   <tr key={p.id} className="border-b border-border last:border-0">
                     <td className="px-4 py-3 font-medium">
                       {[p.first_name, p.last_name].filter(Boolean).join(" ") || "—"}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{p.email ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={
+                          isAdmin
+                            ? "inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary"
+                            : "inline-flex rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground"
+                        }
+                      >
+                        {isAdmin ? "Admin" : "Contractor"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 font-mono text-xs">
                       {card ? `•••• ${card.card_last4}` : "—"}
                     </td>
@@ -169,17 +329,36 @@ const AdminUsers = () => {
                     <td className="px-4 py-3 text-muted-foreground">
                       {format(new Date(p.created_at), "MMM d, yyyy")}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setActive(p);
-                          setShowFull(false);
-                        }}
-                      >
-                        View
-                      </Button>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setActive(p);
+                            setShowFull(false);
+                          }}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditing(p)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          disabled={isSelf}
+                          title={isSelf ? "You cannot delete your own account" : "Delete user"}
+                          onClick={() => setDeleting(p)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -200,6 +379,21 @@ const AdminUsers = () => {
 
           {active && (
             <div className="mt-6 space-y-6">
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => setEditing(active)}>
+                  <Pencil className="mr-2 h-3.5 w-3.5" /> Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  disabled={currentUser?.id === active.id}
+                  onClick={() => setDeleting(active)}
+                >
+                  <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete
+                </Button>
+              </div>
+
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <Field label="Email" value={active.email ?? "—"} />
                 <Field label="Phone" value={active.phone ?? "—"} />
@@ -296,6 +490,165 @@ const AdminUsers = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Edit dialog */}
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit user</DialogTitle>
+            <DialogDescription>
+              Update profile details, address, and role.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="first_name">First name</Label>
+              <Input
+                id="first_name"
+                value={editForm.first_name ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, first_name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="last_name">Last name</Label>
+              <Input
+                id="last_name"
+                value={editForm.last_name ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, last_name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={editForm.email ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                value={editForm.phone ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="street">Street</Label>
+              <Input
+                id="street"
+                value={editForm.street ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, street: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="apt">Apt / Suite</Label>
+              <Input
+                id="apt"
+                value={editForm.apt ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, apt: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                value={editForm.city ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, city: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="state">State</Label>
+              <Input
+                id="state"
+                value={editForm.state ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, state: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="postal_code">Postal code</Label>
+              <Input
+                id="postal_code"
+                value={editForm.postal_code ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, postal_code: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="country">Country</Label>
+              <Input
+                id="country"
+                value={editForm.country ?? ""}
+                onChange={(e) => setEditForm((f) => ({ ...f, country: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Role</Label>
+              <Select
+                value={editForm.isAdmin ? "admin" : "contractor"}
+                onValueChange={(v) =>
+                  setEditForm((f) => ({ ...f, isAdmin: v === "admin" }))
+                }
+                disabled={editing?.id === currentUser?.id}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="contractor">Contractor</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+              {editing?.id === currentUser?.id && (
+                <p className="text-xs text-muted-foreground">
+                  You cannot change your own role.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)} disabled={saving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? "Saving…" : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently removes{" "}
+              <span className="font-semibold">
+                {[deleting?.first_name, deleting?.last_name].filter(Boolean).join(" ") ||
+                  deleting?.email}
+              </span>{" "}
+              and all of their claims, transactions, payouts, and cards. This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deletingNow}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDelete();
+              }}
+              disabled={deletingNow}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deletingNow ? "Deleting…" : "Delete user"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminShell>
   );
 };
