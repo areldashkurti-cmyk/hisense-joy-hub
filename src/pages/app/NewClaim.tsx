@@ -72,11 +72,11 @@ const NewClaim = () => {
   const selectedProduct = useMemo(() => {
     const m = modelNumber.trim().toLowerCase();
     if (!m) return undefined;
-    return products.find(
-      (p) =>
-        p.model_number.toLowerCase() === m &&
-        (!series || p.series === series),
-    );
+    return products.find((p) => {
+      const mn = p.model_number?.toLowerCase() ?? "";
+      const cm = (p as unknown as { compatible_model?: string }).compatible_model?.toLowerCase() ?? "";
+      return (mn === m || cm === m) && (!series || p.series === series);
+    });
   }, [products, series, modelNumber]);
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
