@@ -208,21 +208,17 @@ const NewClaim = () => {
               Product
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Select your series and size — we'll fill in the model number for you.
+              Select your series and enter the model number from your invoice.
             </p>
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs uppercase tracking-wider">
                   Step 1 · Product series
                 </Label>
                 <Select
                   value={series}
-                  onValueChange={(v) => {
-                    setSeries(v);
-                    setSize("");
-                    setProductId("");
-                  }}
+                  onValueChange={(v) => setSeries(v)}
                 >
                   <SelectTrigger className="h-12 rounded-xl bg-card">
                     <SelectValue placeholder="Select series" />
@@ -238,83 +234,20 @@ const NewClaim = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs uppercase tracking-wider">
-                  Step 2 · Size
+                <Label htmlFor="modelNumber" className="text-xs uppercase tracking-wider">
+                  Step 2 · Model number
                 </Label>
-                <Select
-                  value={size}
-                  onValueChange={(v) => {
-                    setSize(v);
-                    setProductId("");
-                  }}
-                  disabled={!series}
-                >
-                  <SelectTrigger className="h-12 rounded-xl bg-card">
-                    <SelectValue placeholder={series ? "Select size" : "Select series first"} />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    {sizesForSeries.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs uppercase tracking-wider">
-                  Step 3 · Model number
-                </Label>
-                {matchingProducts.length > 1 ? (
-                  <Select value={productId} onValueChange={setProductId}>
-                    <SelectTrigger className="h-12 rounded-xl bg-card">
-                      <SelectValue placeholder="Select model" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      {matchingProducts.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          <span className="font-mono">{p.model_number}</span>
-                          {p.category ? (
-                            <span className="ml-2 text-xs text-muted-foreground">
-                              · {p.category}
-                            </span>
-                          ) : null}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    value={
-                      matchingProducts[0]?.model_number ??
-                      (size ? "" : "")
-                    }
-                    readOnly
-                    placeholder={
-                      series && size
-                        ? matchingProducts.length === 0
-                          ? "Contact Administrator"
-                          : ""
-                        : "Auto-filled"
-                    }
-                    className={cn(
-                      "h-12 rounded-xl bg-card font-mono",
-                      matchingProducts.length === 0 && series && size && "border-destructive text-destructive",
-                    )}
-                    onFocus={() => {
-                      if (matchingProducts.length === 1) setProductId(matchingProducts[0].id);
-                    }}
-                  />
-                )}
+                <Input
+                  id="modelNumber"
+                  name="modelNumber"
+                  value={modelNumber}
+                  onChange={(e) => setModelNumber(e.target.value)}
+                  placeholder="Enter model number"
+                  required
+                  className="h-12 rounded-xl bg-card font-mono"
+                />
               </div>
             </div>
-
-            {series && size && matchingProducts.length === 0 && (
-              <p className="mt-3 text-sm text-destructive">
-                No matching product. Please contact your administrator.
-              </p>
-            )}
 
             {selectedProduct && (
               <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
