@@ -115,6 +115,8 @@ const Dashboard = () => {
         </Button>
       </header>
 
+      <RegistrationBonusCard className="mb-6" />
+
       {/* Rewards card */}
       <Card className="relative overflow-hidden border-0 bg-ink bg-card-dark p-8 text-ink-foreground shadow-card">
         <div className="absolute right-0 top-0 h-64 w-64 -translate-y-12 translate-x-12 rounded-full bg-primary/30 blur-3xl" />
