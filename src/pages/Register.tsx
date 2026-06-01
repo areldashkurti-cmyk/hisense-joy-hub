@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { RegistrationBonusCard } from "@/components/RegistrationBonusCard";
 
 
 const phoneRegex = /^[+()\-.\s\d]{7,20}$/;
