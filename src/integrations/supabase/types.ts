@@ -371,6 +371,30 @@ export type Database = {
         }
         Relationships: []
       }
+      registration_bonuses: {
+        Row: {
+          acknowledged: boolean
+          amount: number
+          claimed_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          acknowledged?: boolean
+          amount?: number
+          claimed_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          acknowledged?: boolean
+          amount?: number
+          claimed_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           created_at: string
