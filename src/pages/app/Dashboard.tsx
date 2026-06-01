@@ -16,6 +16,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { RegistrationBonusCard } from "@/components/RegistrationBonusCard";
 
 type ClaimStatus = "pending" | "approved" | "denied" | "paid";
 
@@ -113,6 +114,8 @@ const Dashboard = () => {
           </Link>
         </Button>
       </header>
+
+      <RegistrationBonusCard className="mb-6" />
 
       {/* Rewards card */}
       <Card className="relative overflow-hidden border-0 bg-ink bg-card-dark p-8 text-ink-foreground shadow-card">

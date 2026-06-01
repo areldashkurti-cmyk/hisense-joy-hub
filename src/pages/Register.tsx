@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { RegistrationBonusCard } from "@/components/RegistrationBonusCard";
 
 
 const phoneRegex = /^[+()\-.\s\d]{7,20}$/;
@@ -184,7 +185,10 @@ const Register = () => {
             It takes less than a minute. You'll need your distributor code.
           </p>
 
+          <RegistrationBonusCard preview className="mt-8" />
+
           <form onSubmit={onSubmit} className="mt-10 space-y-6">
+
             <div className="grid gap-5 sm:grid-cols-2">
               <Field id="firstName" label="First name" placeholder="Jordan" />
               <Field id="lastName" label="Last name" placeholder="Cooper" />
