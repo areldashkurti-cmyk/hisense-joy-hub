@@ -16,6 +16,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { RegistrationBonusCard } from "@/components/RegistrationBonusCard";
 
 type ClaimStatus = "pending" | "approved" | "denied" | "paid";
 
