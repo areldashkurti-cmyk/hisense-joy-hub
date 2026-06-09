@@ -6,7 +6,7 @@ export const SiteHeader = () => {
   return (
     <header className="absolute inset-x-0 top-0 z-20">
       <div className="container flex h-20 items-center justify-between">
-        <Link to="/" aria-label="HiPro+ home">
+        <Link to="/" aria-label="Hi-PRO+ home">
           <Logo />
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
@@ -17,7 +17,7 @@ export const SiteHeader = () => {
             Sign in
           </Link>
           <Button asChild variant="hero" size="pill">
-            <Link to="/register">Join HiPro</Link>
+            <Link to="/register">Join Hi-PRO</Link>
           </Button>
         </nav>
       </div>
