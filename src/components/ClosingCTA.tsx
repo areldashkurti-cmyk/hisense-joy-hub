@@ -24,7 +24,7 @@ export const ClosingCTA = () => {
         <div className="relative overflow-hidden rounded-[2rem] bg-ink bg-hero px-8 py-16 sm:px-16 sm:py-24">
           <div className="relative mx-auto max-w-3xl text-center">
             <h2 className="text-4xl font-bold leading-tight tracking-tight text-ink-foreground sm:text-5xl">
-              Built for the pros who deliver Hisense Comfort.
+              Built for the Pros who deliver Hisense Comfort.
             </h2>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
