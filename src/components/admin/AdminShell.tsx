@@ -39,7 +39,7 @@ export const AdminShell = ({ children }: { children: React.ReactNode }) => {
     <div className="min-h-screen bg-background">
       <div className="lg:flex">
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-border bg-card px-5 py-7 lg:flex lg:flex-col">
-          <Link to="/admin" aria-label="HiPro Admin home" className="mb-2">
+          <Link to="/admin" aria-label="Hi-PRO Admin home" className="mb-2">
             <Logo variant="dark" />
           </Link>
           <div className="mb-8 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
@@ -87,7 +87,7 @@ export const AdminShell = ({ children }: { children: React.ReactNode }) => {
 
         {/* Mobile header */}
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur lg:hidden">
-          <Link to="/admin" aria-label="HiPro Admin home">
+          <Link to="/admin" aria-label="Hi-PRO Admin home">
             <Logo variant="dark" size="sm" />
           </Link>
           <Button variant="outline" size="sm" asChild>
