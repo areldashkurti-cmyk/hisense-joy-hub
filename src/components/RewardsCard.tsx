@@ -6,20 +6,20 @@ export const RewardsCard = ({
   holder?: string;
 }) => {
   return (
-    <div className="relative">
+    <div className="relative mx-auto max-w-sm">
       <div className="absolute -inset-6 rounded-[2rem] bg-primary/20 blur-3xl animate-pulse-glow" />
-      <div className="relative overflow-hidden rounded-3xl border border-ink-border bg-card-dark p-8 shadow-card">
+      <div className="relative overflow-hidden rounded-3xl border border-ink-border bg-card-dark p-6 shadow-card sm:p-8">
         <div className="flex items-start justify-between">
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
             Hi-PRO Rewards Card
           </span>
         </div>
 
-        <div className="mt-10 text-5xl font-bold tracking-tight text-ink-foreground sm:text-6xl">
+        <div className="mt-8 text-4xl font-bold tracking-tight text-ink-foreground sm:mt-10 sm:text-6xl">
           {amount}
         </div>
 
-        <div className="mt-12 flex items-end justify-between">
+        <div className="mt-8 flex items-end justify-between sm:mt-12">
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
               Holder
