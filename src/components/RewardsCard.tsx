@@ -28,9 +28,11 @@ export const RewardsCard = ({
               {holder}
             </div>
           </div>
-          <div className="font-serif text-2xl italic font-bold text-primary-glow">
-            MasterCard
-          </div>
+          <svg width="48" height="30" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="18" cy="15" r="12" fill="#EB001B" />
+            <circle cx="30" cy="15" r="12" fill="#F79E1B" />
+            <path d="M24 7.5C26.5 9.7 28 12.6 28 15C28 17.4 26.5 20.3 24 22.5C21.5 20.3 20 17.4 20 15C20 12.6 21.5 9.7 24 7.5Z" fill="#FF5F00" />
+          </svg>
         </div>
       </div>
     </div>
