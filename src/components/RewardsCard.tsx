@@ -29,7 +29,7 @@ export const RewardsCard = ({
             </div>
           </div>
           <div className="font-serif text-2xl italic font-bold text-primary-glow">
-            VISA
+            MasterCard
           </div>
         </div>
       </div>
