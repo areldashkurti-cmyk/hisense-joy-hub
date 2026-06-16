@@ -45,7 +45,7 @@ export const Logo = ({
       {showTagline && (
         <span
           className={cn(
-            "mt-1.5 font-semibold uppercase tracking-[0.18em]",
+            "mt-1.5 font-semibold tracking-[0.18em]",
             taglineClass,
             taglineColor,
           )}

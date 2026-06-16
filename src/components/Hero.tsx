@@ -16,7 +16,7 @@ export const Hero = () => {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-foreground/90">
+              <span className="text-[11px] font-semibold tracking-[0.18em] text-ink-foreground/90">
                 Hi-PRO Contractor Rewards Program
               </span>
             </div>
