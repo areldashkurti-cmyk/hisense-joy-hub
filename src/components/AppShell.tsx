@@ -115,6 +115,13 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
           <div className="fixed inset-x-0 top-16 z-30 border-b border-border bg-background px-4 py-4 lg:hidden">
             {navItems}
             <div className="mt-4 border-t border-border pt-4">
+              {isAdmin && (
+                <Button asChild variant="outline" size="sm" className="mb-3 w-full justify-start gap-2">
+                  <Link to="/admin" onClick={() => setMobileOpen(false)}>
+                    <ShieldCheck className="h-4 w-4" /> Admin portal
+                  </Link>
+                </Button>
+              )}
               <div className="mb-3 truncate text-xs text-muted-foreground">
                 {user?.email}
               </div>
