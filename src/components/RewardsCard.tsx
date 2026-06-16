@@ -10,7 +10,7 @@ export const RewardsCard = ({
       <div className="absolute -inset-6 rounded-[2rem] bg-primary/20 blur-3xl animate-pulse-glow" />
       <div className="relative overflow-hidden rounded-3xl border border-ink-border bg-card-dark p-6 shadow-card sm:p-8">
         <div className="flex items-start justify-between">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
+          <span className="text-[11px] font-semibold tracking-[0.18em] text-ink-muted">
             Hi-PRO Rewards Card
           </span>
         </div>
