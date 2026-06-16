@@ -178,7 +178,7 @@ export const RegistrationBonusCard = ({ preview = false, className }: Props) => 
           <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm leading-relaxed">
             By clicking <span className="font-semibold">"Claim Bonus,"</span> I
             acknowledge and agree to receive a $100 Registration Bonus as part
-            of my enrollment in the Jewelry Rewards Program, subject to program
+            of my enrollment in the Hisense Hi-PRO Contractor Rewards, subject to program
             terms and eligibility requirements.
           </div>
 
