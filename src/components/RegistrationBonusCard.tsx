@@ -113,8 +113,8 @@ export const RegistrationBonusCard = ({ preview = false, className }: Props) => 
               $100 Registration Bonus
             </h3>
             <p className="mt-2 text-sm text-ink-muted">
-              The first 100 approved users in the Jewelry Rewards Program receive
-              a one-time $100 bonus on enrollment.
+              The first 100 approved users in the Hisense Hi-PRO Contractor Rewards
+              receive a one-time $100 bonus on enrollment.
             </p>
 
             {!preview && (
