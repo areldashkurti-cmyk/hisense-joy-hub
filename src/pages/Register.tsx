@@ -204,11 +204,11 @@ const Register = () => {
 
             <div className="space-y-2">
               <Label htmlFor="distributorCode" className="text-xs uppercase tracking-wider">
-                Distributor / Customer number
+                Distributor number
               </Label>
               <Select value={selection} onValueChange={setSelection}>
                 <SelectTrigger id="distributorCode" className="h-12 rounded-xl bg-card">
-                  <SelectValue placeholder="Select your customer number" />
+                  <SelectValue placeholder="Select your distributor number" />
                 </SelectTrigger>
                 <SelectContent>
                   {DISTRIBUTOR_CODES.map((c) => (
@@ -217,7 +217,7 @@ const Register = () => {
                     </SelectItem>
                   ))}
                   <SelectItem value={OTHER_CODE}>
-                    Other / I do not know my customer number
+                    Other / I do not know my distributor number
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -225,14 +225,15 @@ const Register = () => {
               {isOther && (
                 <div className="space-y-2 pt-2">
                   <Input
-                    placeholder="Enter your distributor code"
+                    placeholder="Enter your distributor number"
                     value={customCode}
                     onChange={(e) => setCustomCode(e.target.value.toUpperCase())}
                     maxLength={40}
                     className="h-12 rounded-xl bg-card"
                   />
                   <p className="text-xs text-muted-foreground">
-                    We will review this code to ensure it is eligible.
+                    Manually entered distributor numbers are reviewed and verified by the
+                    Hisense team before any claim submission can be approved in the admin portal.
                   </p>
                 </div>
               )}
