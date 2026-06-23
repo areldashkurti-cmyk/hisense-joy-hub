@@ -1,7 +1,6 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Tag,
   Wallet,
   LifeBuoy,
   User as UserIcon,
@@ -21,7 +20,6 @@ import { toast } from "sonner";
 
 const nav = [
   { to: "/app", label: "Home", icon: LayoutDashboard, end: true },
-  { to: "/app/promotions", label: "Promotions", icon: Tag },
   { to: "/app/claims/new", label: "Submit claim", icon: Plus },
   { to: "/app/dashboard", label: "Dashboard", icon: Wallet },
   { to: "/app/support", label: "Support", icon: LifeBuoy },
