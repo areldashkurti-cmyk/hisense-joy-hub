@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      bonus_invitation_codes: {
+        Row: {
+          amount: number
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          redeemed_at: string | null
+          redeemed_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       claims: {
         Row: {
           customer_name: string
@@ -492,6 +528,12 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      redeem_bonus_code: {
+        Args: { _code: string }
+        Returns: {
+          amount: number
+        }[]
       }
     }
     Enums: {
