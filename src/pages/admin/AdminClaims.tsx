@@ -131,7 +131,7 @@ const AdminClaims = () => {
       cardholder_name:
         [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
         profile?.email ||
-        "Hi-PRO Contractor",
+        "Hi-PRO Dealer",
     });
   };
 
@@ -222,7 +222,7 @@ const AdminClaims = () => {
                 <thead className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-widest text-muted-foreground">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Submitted</th>
-                    <th className="px-4 py-3 font-semibold">Contractor</th>
+                    <th className="px-4 py-3 font-semibold">Dealer</th>
                     <th className="px-4 py-3 font-semibold">Customer</th>
                     <th className="px-4 py-3 font-semibold">Model</th>
                     <th className="px-4 py-3 font-semibold">Amount</th>
