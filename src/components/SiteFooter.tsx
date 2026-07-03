@@ -6,7 +6,7 @@ export const SiteFooter = () => {
       <div className="container flex flex-col items-center justify-between gap-4 sm:flex-row">
         <Logo variant="dark" />
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Hisense Comfort · Hi-PRO Contractor
+          © {new Date().getFullYear()} Hisense Comfort · Hi-PRO Dealer
           Rewards Program. All rights reserved.
         </p>
       </div>
