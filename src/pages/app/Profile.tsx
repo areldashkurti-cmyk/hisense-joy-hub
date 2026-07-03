@@ -338,10 +338,6 @@ const RedeemInvitationCode = () => {
     </Card>
   );
 };
-      )}
-    </AppShell>
-  );
-};
 
 const Field = ({
   id,
