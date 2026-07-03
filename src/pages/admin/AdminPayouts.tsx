@@ -220,7 +220,7 @@ const AdminPayouts = () => {
           Payouts
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Process bank transfers for contractors with available balance. Bank API
+          Process bank transfers for dealers with available balance. Bank API
           responses are simulated.
         </p>
       </header>
@@ -231,13 +231,13 @@ const AdminPayouts = () => {
       <Card className="overflow-hidden p-0">
         {balances.length === 0 ? (
           <div className="p-12 text-center text-muted-foreground">
-            No contractors with available balance.
+            No dealers with available balance.
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-widest text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 font-semibold">Contractor</th>
+                <th className="px-4 py-3 font-semibold">Dealer</th>
                 <th className="px-4 py-3 font-semibold">Card</th>
                 <th className="px-4 py-3 font-semibold">Available</th>
                 <th className="px-4 py-3 font-semibold text-right">Action</th>
@@ -294,7 +294,7 @@ const AdminPayouts = () => {
               <tr>
                 <th className="px-4 py-3 font-semibold">Date</th>
                 <th className="px-4 py-3 font-semibold">Reference</th>
-                <th className="px-4 py-3 font-semibold">Contractor</th>
+                <th className="px-4 py-3 font-semibold">Dealer</th>
                 <th className="px-4 py-3 font-semibold">Amount</th>
                 <th className="px-4 py-3 font-semibold">Status</th>
               </tr>

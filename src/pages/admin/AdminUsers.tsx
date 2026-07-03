@@ -283,13 +283,13 @@ const AdminUsers = () => {
       <Card className="overflow-hidden p-0">
         {filtered.length === 0 ? (
           <div className="p-12 text-center text-muted-foreground">
-            No contractors found.
+            No dealers found.
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-widest text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 font-semibold">Contractor</th>
+                <th className="px-4 py-3 font-semibold">Dealer</th>
                 <th className="px-4 py-3 font-semibold">Email</th>
                 <th className="px-4 py-3 font-semibold">Role</th>
                 <th className="px-4 py-3 font-semibold">Card</th>
@@ -317,7 +317,7 @@ const AdminUsers = () => {
                             : "inline-flex rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground"
                         }
                       >
-                        {isAdmin ? "Admin" : "Contractor"}
+                        {isAdmin ? "Admin" : "Dealer"}
                       </span>
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
@@ -596,7 +596,7 @@ const AdminUsers = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="contractor">Contractor</SelectItem>
+                  <SelectItem value="contractor">Dealer</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
