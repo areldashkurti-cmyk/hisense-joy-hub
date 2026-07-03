@@ -252,9 +252,90 @@ const Profile = () => {
               )}
             </Button>
           </Card>
+
+          <RedeemInvitationCode />
         </div>
       )}
     </AppShell>
+  );
+};
+
+const RedeemInvitationCode = () => {
+  const { user, isReady } = useAuth();
+  const qc = useQueryClient();
+  const [code, setCode] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const { data: existing } = useQuery({
+    queryKey: ["my-bonus", user?.id],
+    enabled: isReady && !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("registration_bonuses")
+        .select("amount, claimed_at")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const onRedeem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code.trim()) return;
+    setSubmitting(true);
+    const { data, error } = await supabase.rpc("redeem_bonus_code", {
+      _code: code.trim(),
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Couldn't redeem code", { description: error.message });
+      return;
+    }
+    const amount = Array.isArray(data) && data[0]?.amount ? Number(data[0].amount) : 100;
+    toast.success("Bonus redeemed!", {
+      description: `$${amount.toFixed(2)} has been added to your account.`,
+    });
+    setCode("");
+    qc.invalidateQueries({ queryKey: ["my-bonus"] });
+  };
+
+  if (existing) {
+    return (
+      <Card className="space-y-2 p-6 sm:p-8">
+        <h2 className="text-lg font-semibold">Sign-on bonus</h2>
+        <p className="text-sm text-muted-foreground">
+          You redeemed a ${Number(existing.amount).toFixed(2)} sign-on bonus.
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="space-y-4 p-6 sm:p-8">
+      <div>
+        <h2 className="text-lg font-semibold">Invitation code</h2>
+        <p className="text-sm text-muted-foreground">
+          Received a private invitation code from Hisense? Enter it here to redeem your sign-on bonus.
+        </p>
+      </div>
+      <form onSubmit={onRedeem} className="flex flex-col gap-3 sm:flex-row">
+        <Input
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder="XXXX-XXXX"
+          maxLength={40}
+          className="h-11 rounded-xl sm:max-w-xs"
+        />
+        <Button
+          type="submit"
+          variant="hero"
+          disabled={submitting || !code.trim()}
+          className="h-11 rounded-xl"
+        >
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Redeem code"}
+        </Button>
+      </form>
+    </Card>
   );
 };
 

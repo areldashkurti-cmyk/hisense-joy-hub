@@ -7,6 +7,7 @@ import {
   Users,
   Megaphone,
   Package,
+  Ticket,
   LogOut,
   ArrowLeft,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const nav = [
   { to: "/admin/users", label: "Users & cards", icon: Users },
   { to: "/admin/content", label: "Promotions & news", icon: Megaphone },
   { to: "/admin/products", label: "Products", icon: Package },
+  { to: "/admin/bonus-codes", label: "Bonus codes", icon: Ticket },
 ];
 
 export const AdminShell = ({ children }: { children: React.ReactNode }) => {
