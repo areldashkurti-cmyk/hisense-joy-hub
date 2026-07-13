@@ -24,11 +24,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import {
-  generateMockCardNumber,
-  generateExpiry,
-  generateCvv,
-} from "@/lib/card";
+import { generateExpiry, generateLast4 } from "@/lib/card";
 
 type ValidationStatus = "not_run" | "valid" | "flagged" | "missing_invoice" | "error";
 
@@ -119,15 +115,12 @@ const AdminClaims = () => {
     if (existing) return;
 
     const profile = profileMap.get(uid);
-    const number = generateMockCardNumber();
     const exp = generateExpiry();
     await supabase.from("payment_cards").insert({
       user_id: uid,
-      card_number: number,
-      card_last4: number.slice(-4),
+      card_last4: generateLast4(),
       expiry_month: exp.month,
       expiry_year: exp.year,
-      cvv: generateCvv(),
       cardholder_name:
         [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
         profile?.email ||
