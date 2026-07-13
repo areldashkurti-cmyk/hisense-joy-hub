@@ -335,7 +335,6 @@ const AdminUsers = () => {
                           variant="outline"
                           onClick={() => {
                             setActive(p);
-                            setShowFull(false);
                           }}
                         >
                           View
