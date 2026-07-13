@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/select";
 
 import { supabase } from "@/integrations/supabase/client";
-import { formatCardNumber } from "@/lib/card";
+import { maskCardNumber } from "@/lib/card";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
@@ -61,7 +61,6 @@ type Profile = {
 
 type Card = {
   user_id: string;
-  card_number: string;
   card_last4: string;
   expiry_month: number;
   expiry_year: number;
@@ -412,18 +411,8 @@ const AdminUsers = () => {
                     </p>
                     <div className="mt-4 flex items-center justify-between">
                       <p className="font-mono text-lg tracking-widest">
-                        {showFull
-                          ? formatCardNumber(activeCard.card_number)
-                          : `•••• •••• •••• ${activeCard.card_last4}`}
+                        {maskCardNumber(activeCard.card_last4)}
                       </p>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="text-ink-muted hover:bg-white/10 hover:text-ink-foreground"
-                        onClick={() => setShowFull((s) => !s)}
-                      >
-                        {showFull ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
                     </div>
                     <div className="mt-4 flex items-end justify-between text-xs">
                       <div>
