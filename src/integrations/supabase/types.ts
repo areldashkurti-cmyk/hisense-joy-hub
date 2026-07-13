@@ -175,10 +175,8 @@ export type Database = {
       payment_cards: {
         Row: {
           card_last4: string
-          card_number: string
           cardholder_name: string
           created_at: string
-          cvv: string
           expiry_month: number
           expiry_year: number
           id: string
@@ -188,10 +186,8 @@ export type Database = {
         }
         Insert: {
           card_last4: string
-          card_number: string
           cardholder_name: string
           created_at?: string
-          cvv: string
           expiry_month: number
           expiry_year: number
           id?: string
@@ -201,10 +197,8 @@ export type Database = {
         }
         Update: {
           card_last4?: string
-          card_number?: string
           cardholder_name?: string
           created_at?: string
-          cvv?: string
           expiry_month?: number
           expiry_year?: number
           id?: string
