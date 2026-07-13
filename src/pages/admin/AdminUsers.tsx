@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Eye, EyeOff, Pencil, Search, Trash2 } from "lucide-react";
+import { Pencil, Search, Trash2 } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,7 @@ const AdminUsers = () => {
   const { user: currentUser } = useAuth();
   const [q, setQ] = useState("");
   const [active, setActive] = useState<Profile | null>(null);
-  const [showFull, setShowFull] = useState(false);
+  
   const [editing, setEditing] = useState<Profile | null>(null);
   const [editForm, setEditForm] = useState<Partial<Profile> & { isAdmin?: boolean }>({});
   const [saving, setSaving] = useState(false);
