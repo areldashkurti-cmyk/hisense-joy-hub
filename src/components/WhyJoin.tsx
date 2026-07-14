@@ -24,25 +24,25 @@ export const WhyJoin = () => {
   return (
     <section className="bg-background py-24 sm:py-32">
       <div className="container">
-        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.35fr_1.65fr] lg:gap-16">
           {/* Image */}
-          <div className="relative order-last lg:order-first">
-            <div className="relative overflow-hidden rounded-[2rem] bg-secondary shadow-card">
+          <div className="relative order-last flex justify-center lg:order-first">
+            <div className="relative w-full max-w-[120px] overflow-hidden rounded-[1.25rem] bg-secondary shadow-card sm:max-w-[140px]">
               <img
                 src={dealerImage}
                 alt="Professional Hisense Hi-PRO HVAC dealer wearing branded polo and cap in front of a home"
-                className="h-full w-full object-cover"
+                className="h-auto w-full object-cover"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-ink/30 via-transparent to-transparent" />
             </div>
 
             {/* Floating stat */}
-            <div className="absolute -bottom-6 -right-4 hidden rounded-2xl border border-border bg-card p-5 shadow-card sm:block lg:-right-6">
-              <div className="text-3xl font-bold tracking-tight text-primary">
+            <div className="absolute -bottom-4 -right-2 hidden rounded-2xl border border-border bg-card p-3 shadow-card sm:block lg:-right-8">
+              <div className="text-xl font-bold tracking-tight text-primary">
                 $100
               </div>
-              <div className="mt-0.5 text-xs font-medium text-muted-foreground">
+              <div className="mt-0.5 text-[10px] font-medium text-muted-foreground">
                 per installed system
               </div>
             </div>
