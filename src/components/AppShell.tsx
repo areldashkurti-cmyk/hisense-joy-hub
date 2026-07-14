@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  DollarSign,
 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
@@ -22,6 +23,7 @@ const nav = [
   { to: "/app", label: "Home", icon: LayoutDashboard, end: true },
   { to: "/app/claims/new", label: "Submit claim", icon: Plus },
   { to: "/app/dashboard", label: "Dashboard", icon: Wallet },
+  { to: "/app/earnings", label: "Payout schedule", icon: DollarSign },
   { to: "/app/support", label: "Support", icon: LifeBuoy },
   { to: "/app/profile", label: "Profile", icon: UserIcon },
 ];
