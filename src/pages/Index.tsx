@@ -1,6 +1,9 @@
 import { Hero } from "@/components/Hero";
+import { WhyJoin } from "@/components/WhyJoin";
+import { ProgramHighlights } from "@/components/ProgramHighlights";
 import { HowItWorks } from "@/components/HowItWorks";
-import { ProgramTeaser } from "@/components/ProgramTeaser";
+import { ToolsSupport } from "@/components/ToolsSupport";
+import { ProgramFAQ } from "@/components/ProgramFAQ";
 import { ClosingCTA } from "@/components/ClosingCTA";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -8,8 +11,11 @@ const Index = () => {
   return (
     <main className="min-h-screen bg-background">
       <Hero />
+      <WhyJoin />
+      <ProgramHighlights />
       <HowItWorks />
-      <ProgramTeaser />
+      <ToolsSupport />
+      <ProgramFAQ />
       <ClosingCTA />
       <SiteFooter />
     </main>
