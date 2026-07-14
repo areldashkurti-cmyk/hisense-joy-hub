@@ -23,7 +23,7 @@ const nav = [
   { to: "/app", label: "Home", icon: LayoutDashboard, end: true },
   { to: "/app/claims/new", label: "Submit claim", icon: Plus },
   { to: "/app/dashboard", label: "Dashboard", icon: Wallet },
-  { to: "/app/earnings", label: "Payout schedule", icon: DollarSign },
+  { to: "/app/earnings", label: "Hi-PRO Rewards", icon: DollarSign },
   { to: "/app/support", label: "Support", icon: LifeBuoy },
   { to: "/app/profile", label: "Profile", icon: UserIcon },
 ];
