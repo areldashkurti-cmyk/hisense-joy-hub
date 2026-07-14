@@ -1,25 +1,22 @@
-import { Award, TrendingUp, Target, Trophy } from "lucide-react";
+import { Award, TrendingUp, Target, Trophy, Check } from "lucide-react";
+import dealerImage from "@/assets/hipro-dealer.jpg";
 
 const reasons = [
   {
     icon: Award,
-    title: "Exclusive incentives",
-    body: "Access rewards, accruals, and support reserved for professional Hi-PRO Dealers.",
+    title: "Exclusive incentives and support",
   },
   {
     icon: Target,
     title: "Differentiate your business",
-    body: "Stand out as a Hisense-certified partner in your local market.",
   },
   {
     icon: TrendingUp,
     title: "Increase profitability",
-    body: "Turn every qualified install into rewards, accruals, and extended coverage.",
   },
   {
     icon: Trophy,
     title: "Win more jobs",
-    body: "Financing tools, priority support, and leads help you close with confidence.",
   },
 ];
 
@@ -27,36 +24,66 @@ export const WhyJoin = () => {
   return (
     <section className="bg-background py-24 sm:py-32">
       <div className="container">
-        <div className="mx-auto max-w-2xl text-center">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
-            Why Hi-PRO?
-          </div>
-          <h2 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Strong partnerships drive strong results.
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground">
-            The Hi-PRO Dealer Program is built to help professional HVAC
-            dealers grow with the backing of a global brand.
-          </p>
-        </div>
-
-        <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {reasons.map(({ icon: Icon, title, body }) => (
-            <div
-              key={title}
-              className="rounded-3xl border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:shadow-soft"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Icon className="h-5 w-5" />
-              </div>
-              <h3 className="mt-5 text-lg font-semibold tracking-tight">
-                {title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {body}
-              </p>
+        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+          {/* Image */}
+          <div className="relative order-last lg:order-first">
+            <div className="relative overflow-hidden rounded-[2rem] bg-secondary shadow-card">
+              <img
+                src={dealerImage}
+                alt="Professional Hisense Hi-PRO HVAC dealer wearing branded polo and cap in front of a home"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-ink/30 via-transparent to-transparent" />
             </div>
-          ))}
+
+            {/* Floating stat */}
+            <div className="absolute -bottom-6 -right-4 hidden rounded-2xl border border-border bg-card p-5 shadow-card sm:block lg:-right-6">
+              <div className="text-3xl font-bold tracking-tight text-primary">
+                $100
+              </div>
+              <div className="mt-0.5 text-xs font-medium text-muted-foreground">
+                per installed system
+              </div>
+            </div>
+          </div>
+
+          {/* Copy */}
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
+              Why Hi-PRO?
+            </div>
+            <h2 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+              Strong partnerships drive strong results.
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+              The Hi-PRO Dealer Program is Hisense HVAC's premier partnership
+              for professional dealers committed to delivering high
+              performance. At Hisense, we believe strong partnerships drive
+              strong results — Hi-PRO is built to help you:
+            </p>
+
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+              {reasons.map(({ icon: Icon, title }) => (
+                <li
+                  key={title}
+                  className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4"
+                >
+                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="pt-1 text-sm font-semibold tracking-tight">
+                    {title}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
+              <Check className="h-4 w-4 text-primary" />
+              Backed by Hisense HVAC's global brand and dealer network.
+            </div>
+          </div>
         </div>
       </div>
     </section>
