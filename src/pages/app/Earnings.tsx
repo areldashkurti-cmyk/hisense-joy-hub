@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { DollarSign, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PAYOUT_SCHEDULE, MAX_PAYOUT, type PayoutCategory } from "@/data/payoutSchedule";
