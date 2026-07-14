@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { DollarSign, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PAYOUT_SCHEDULE, MAX_PAYOUT, type PayoutCategory } from "@/data/payoutSchedule";
@@ -31,94 +30,94 @@ const Earnings = () => {
   return (
     <AppShell>
       <header className="mb-8">
-        <p className="text-sm font-medium uppercase tracking-widest text-primary">
-          Hi-PRO Rewards
+        <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+          Earn up to:
         </p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
-          Payout schedule
+        <h1 className="mt-1 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          Hi-PRO Rewards
         </h1>
-        <p className="mt-2 max-w-2xl text-muted-foreground">
+        <p className="mt-3 max-w-2xl text-muted-foreground">
           Reference the reward amount you'll earn for each qualified Hisense
           installation. Earn up to{" "}
-          <span className="font-semibold text-foreground">${MAX_PAYOUT}</span>{" "}
+          <span className="font-semibold text-primary">${MAX_PAYOUT}</span>{" "}
           per installed system.
         </p>
       </header>
 
-      <Card className="p-4 sm:p-6">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search tonnage or series"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              className="h-11 rounded-xl pl-9"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground">
-            All amounts in USD. Program terms apply and are subject to change.
-          </p>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search tonnage or series"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            className="h-11 rounded-xl pl-9"
+          />
         </div>
+        <p className="text-xs text-muted-foreground">
+          All amounts in USD. Program terms apply and are subject to change.
+        </p>
+      </div>
 
-        <Tabs defaultValue="hd" className="w-full">
-          <TabsList className="mb-6 grid w-full grid-cols-3">
-            {PAYOUT_SCHEDULE.map((c) => (
-              <TabsTrigger key={c.id} value={c.id}>
-                {c.title}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+      <Tabs defaultValue="hd" className="w-full">
+        <TabsList className="mb-6 grid w-full grid-cols-3">
+          {PAYOUT_SCHEDULE.map((c) => (
+            <TabsTrigger key={c.id} value={c.id}>
+              {c.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-          {PAYOUT_SCHEDULE.map((cat) => {
-            const view = filtered.find((c) => c.id === cat.id);
-            return (
-              <TabsContent key={cat.id} value={cat.id} className="space-y-6">
-                <p className="text-sm text-muted-foreground">{cat.description}</p>
+        {PAYOUT_SCHEDULE.map((cat) => {
+          const view = filtered.find((c) => c.id === cat.id);
+          return (
+            <TabsContent key={cat.id} value={cat.id} className="space-y-6">
+              <div className="rounded-2xl bg-[hsl(210_15%_91%)] p-6 text-[hsl(var(--ink))] shadow-card sm:p-8">
+                <p className="mb-6 text-sm text-[hsl(var(--ink))]/70">
+                  {cat.description}
+                </p>
                 {!view || view.groups.length === 0 ? (
-                  <p className="rounded-xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+                  <p className="rounded-xl border border-dashed border-[hsl(var(--ink))]/20 py-10 text-center text-sm text-[hsl(var(--ink))]/60">
                     No matches for “{q}”.
                   </p>
                 ) : (
-                  view.groups.map((g) => (
-                    <div
-                      key={g.series}
-                      className="overflow-hidden rounded-2xl border border-border"
-                    >
-                      <div className="border-b border-border bg-secondary/50 px-4 py-3">
-                        <h3 className="text-sm font-semibold tracking-tight">
+                  <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-2">
+                    {view.groups.map((g) => (
+                      <div key={g.series}>
+                        <h3 className="mb-3 text-base font-bold tracking-tight text-primary">
                           {g.series}
                         </h3>
-                      </div>
-                      <ul className="divide-y divide-border">
-                        {g.rows.map((r) => (
-                          <li
-                            key={`${g.series}-${r.label}`}
-                            className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
-                          >
-                            <div>
-                              <span className="font-medium">{r.label}</span>
-                              {r.note && (
-                                <span className="ml-2 text-muted-foreground">
-                                  · {r.note}
+                        <ul className="divide-y divide-[hsl(var(--ink))]/10">
+                          {g.rows.map((r) => (
+                            <li
+                              key={`${g.series}-${r.label}`}
+                              className="flex items-center justify-between gap-4 py-2 text-sm transition-colors hover:bg-[hsl(var(--ink))]/5"
+                            >
+                              <div className="flex-1">
+                                <span className="font-medium text-[hsl(var(--ink))]">
+                                  {r.label}
                                 </span>
-                              )}
-                            </div>
-                            <span className="inline-flex items-center gap-1 font-semibold text-primary">
-                              <DollarSign className="h-3.5 w-3.5" />
-                              {r.amount}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))
+                                {r.note && (
+                                  <span className="ml-2 text-[hsl(var(--ink))]/60">
+                                    · {r.note}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="font-semibold text-[hsl(var(--ink))]">
+                                ${r.amount}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </TabsContent>
-            );
-          })}
-        </Tabs>
-      </Card>
+              </div>
+            </TabsContent>
+          );
+        })}
+      </Tabs>
     </AppShell>
   );
 };
