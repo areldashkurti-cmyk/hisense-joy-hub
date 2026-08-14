@@ -11,12 +11,6 @@ export const SiteHeader = () => {
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
           <Link
-            to="/#hi-pro"
-            className="hidden rounded-full px-4 py-2 text-sm font-medium text-ink-foreground/80 transition-colors hover:text-ink-foreground sm:inline-block"
-          >
-            Hi-PRO Program
-          </Link>
-          <Link
             to="/login"
             className="rounded-full px-4 py-2 text-sm font-medium text-ink-foreground/80 transition-colors hover:text-ink-foreground"
           >
