@@ -172,7 +172,7 @@ const Profile = () => {
                 <div className="flex h-12 items-center rounded-xl border border-border bg-secondary/50 px-4 text-sm">
                   {profile?.distributors
                     ? `${profile.distributors.name} (${profile.distributors.code})`
-                    : "Not assigned — contact support"}
+                    : "Not assigned, contact support"}
                 </div>
               </div>
 

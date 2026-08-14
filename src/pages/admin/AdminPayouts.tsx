@@ -192,7 +192,7 @@ const AdminPayouts = () => {
       if (status === "settled") {
         toast.success("Payout settled successfully");
       } else {
-        toast.error("Bank rejected the payout — balance refunded");
+        toast.error("Bank rejected the payout, balance refunded");
       }
       qc.invalidateQueries({ queryKey: ["admin-payouts"] });
       qc.invalidateQueries({ queryKey: ["admin-all-txs"] });

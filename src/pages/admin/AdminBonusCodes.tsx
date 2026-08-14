@@ -86,7 +86,7 @@ const AdminBonusCodes = () => {
         </h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Issue single-use $100 sign-on bonus codes to selected dealers. Codes
-          are not shown publicly — share them privately.
+          are not shown publicly, share them privately.
         </p>
       </header>
 
@@ -121,7 +121,7 @@ const AdminBonusCodes = () => {
             <Input
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="e.g. Cooper's HVAC — Vegas"
+              placeholder="e.g. Cooper's HVAC, Vegas"
               className="h-11 rounded-xl"
             />
           </div>
