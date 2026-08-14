@@ -7,10 +7,6 @@ import {
 
 const faqs = [
   {
-    q: "Who can register for Hisense Dealer Rewards?",
-    a: "Any dealer who purchases and installs qualifying Hisense products can register on their own — no invitation or sponsorship required.",
-  },
-  {
     q: "How do I earn rewards?",
     a: "Register your account, then submit a claim for each qualifying Hisense system you install. Approved claims earn a flat dollar reward, up to $100 per qualifying installed system.",
   },
