@@ -19,8 +19,8 @@ const faqs = [
     a: "Under a minute. You'll need your name, email, an optional phone number, your distributor, and a mailing address.",
   },
   {
-    q: "What if I don't know my distributor number?",
-    a: "Choose \"Other / I don't know my distributor number\" and enter what you know. Our team will review and verify it before your claims are approved.",
+    q: "What if I don't know my distributor code?",
+    a: "Our team will review and verify it before your claims are approved.",
   },
   {
     q: "How is this different from the Hi-PRO Dealer Program?",
