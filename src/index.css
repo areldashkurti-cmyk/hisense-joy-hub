@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* HiPro+ Design System — Hisense Comfort Pro Partner Program
+/* HiPro+ Design System: Hisense Comfort Pro Partner Program
    All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    /* Dark-first surfaces — black dominant */
+    /* Dark-first surfaces: black dominant */
     --background: 195 60% 4%;
     --foreground: 180 25% 92%;
 
@@ -18,7 +18,7 @@
     --popover: 195 55% 5%;
     --popover-foreground: 180 25% 92%;
 
-    /* Teal accent — kept but secondary to black */
+    /* Teal accent: kept but secondary to black */
     --primary: 174 86% 38%;
     --primary-foreground: 195 60% 4%;
     --primary-glow: 168 76% 48%;

@@ -86,7 +86,7 @@ const AdminBonusCodes = () => {
         </h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Issue single-use $100 sign-on bonus codes to selected dealers. Codes
-          are not shown publicly — share them privately.
+          are not shown publicly, share them privately.
         </p>
       </header>
 
@@ -121,7 +121,7 @@ const AdminBonusCodes = () => {
             <Input
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="e.g. Cooper's HVAC — Vegas"
+              placeholder="e.g. Cooper's HVAC, Vegas"
               className="h-11 rounded-xl"
             />
           </div>
@@ -155,7 +155,7 @@ const AdminBonusCodes = () => {
                 <tr key={c.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-mono">{c.code}</td>
                   <td className="px-4 py-3 font-semibold">${Number(c.amount).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{c.note ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{c.note ?? "-"}</td>
                   <td className="px-4 py-3">
                     {c.redeemed_by ? (
                       <Badge className="rounded-full bg-primary/15 text-primary">

@@ -1,4 +1,4 @@
-// Card display utilities. Full PAN and CVV are never stored — only the last 4 digits.
+// Card display utilities. Full PAN and CVV are never stored, only the last 4 digits.
 export const maskCardNumber = (last4: string) =>
   `•••• •••• •••• ${(last4 ?? "").padStart(4, "•")}`;
 

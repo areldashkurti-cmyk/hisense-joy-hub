@@ -9,7 +9,7 @@ const points = [
   {
     icon: Wallet,
     title: "Flat dollar rewards",
-    body: "Earn up to $100 on qualifying installed systems. Reward amounts are set per model — no math, no guesswork.",
+    body: "Earn up to $100 on qualifying installed systems. Reward amounts are set per model, no math, no guesswork.",
   },
   {
     icon: CreditCard,

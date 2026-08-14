@@ -171,12 +171,12 @@ const AdminProducts = () => {
                 {filtered.map((p) => (
                   <tr key={p.id} className="border-b border-border last:border-0">
                     <td className="px-4 py-3 font-mono text-xs">{p.model_number}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{p.compatible_model ?? "—"}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{p.compatible_model ?? "-"}</td>
                     <td className="px-4 py-3 font-medium">{p.series}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{p.category ?? "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{p.product_type ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{p.category ?? "-"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{p.product_type ?? "-"}</td>
                     <td className="px-4 py-3">
-                      {p.payout_rate != null ? `$${Number(p.payout_rate).toFixed(2)}` : "—"}
+                      {p.payout_rate != null ? `$${Number(p.payout_rate).toFixed(2)}` : "-"}
                     </td>
                     <td className="px-4 py-3">
                       <Switch checked={p.active} onCheckedChange={() => toggleActive.mutate(p)} />

@@ -133,7 +133,7 @@ const Register = () => {
       return;
     }
     toast.success("Account created!", {
-      description: "You're all set — welcome to Hisense Rewards.",
+      description: "You're all set. Welcome to Hisense Rewards.",
     });
     navigate("/app", { replace: true });
   };

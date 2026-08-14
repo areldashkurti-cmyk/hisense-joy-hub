@@ -21,7 +21,7 @@ export const HiProProgram = () => {
             The Hi-PRO Dealer Program is Hisense HVAC's premier partnership for
             professional dealers, offering added support and growth
             opportunities beyond Hisense Dealer Rewards. It is administered by
-            participating distributors — not on this site.
+            participating distributors, not on this site.
           </p>
 
           <p className="mt-5 text-base font-medium text-ink-foreground/90">

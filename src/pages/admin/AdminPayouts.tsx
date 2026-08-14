@@ -192,7 +192,7 @@ const AdminPayouts = () => {
       if (status === "settled") {
         toast.success("Payout settled successfully");
       } else {
-        toast.error("Bank rejected the payout — balance refunded");
+        toast.error("Bank rejected the payout, balance refunded");
       }
       qc.invalidateQueries({ queryKey: ["admin-payouts"] });
       qc.invalidateQueries({ queryKey: ["admin-all-txs"] });
@@ -260,7 +260,7 @@ const AdminPayouts = () => {
                       )}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
-                      {last4 ? `•••• ${last4}` : "—"}
+                      {last4 ? `•••• ${last4}` : "-"}
                     </td>
                     <td className="px-4 py-3 font-semibold">${balance.toFixed(2)}</td>
                     <td className="px-4 py-3 text-right">

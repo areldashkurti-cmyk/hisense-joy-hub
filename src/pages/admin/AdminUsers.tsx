@@ -305,9 +305,9 @@ const AdminUsers = () => {
                 return (
                   <tr key={p.id} className="border-b border-border last:border-0">
                     <td className="px-4 py-3 font-medium">
-                      {[p.first_name, p.last_name].filter(Boolean).join(" ") || "—"}
+                      {[p.first_name, p.last_name].filter(Boolean).join(" ") || "-"}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{p.email ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{p.email ?? "-"}</td>
                     <td className="px-4 py-3">
                       <span
                         className={
@@ -320,7 +320,7 @@ const AdminUsers = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
-                      {card ? `•••• ${card.card_last4}` : "—"}
+                      {card ? `•••• ${card.card_last4}` : "-"}
                     </td>
                     <td className="px-4 py-3 font-semibold">
                       ${(balances.get(p.id) ?? 0).toFixed(2)}
@@ -393,10 +393,10 @@ const AdminUsers = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <Field label="Email" value={active.email ?? "—"} />
-                <Field label="Phone" value={active.phone ?? "—"} />
-                <Field label="City" value={active.city ?? "—"} />
-                <Field label="State" value={active.state ?? "—"} />
+                <Field label="Email" value={active.email ?? "-"} />
+                <Field label="Phone" value={active.phone ?? "-"} />
+                <Field label="City" value={active.city ?? "-"} />
+                <Field label="State" value={active.state ?? "-"} />
               </div>
 
               <div>
