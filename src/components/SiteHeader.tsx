@@ -6,15 +6,15 @@ export const SiteHeader = () => {
   return (
     <header className="absolute inset-x-0 top-0 z-20">
       <div className="container flex h-20 items-center justify-between">
-        <Link to="/" aria-label="Hi-PRO+ home">
+        <Link to="/" aria-label="Hisense Dealer Rewards home">
           <Logo />
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
           <Link
-            to="/program"
+            to="/#hi-pro"
             className="hidden rounded-full px-4 py-2 text-sm font-medium text-ink-foreground/80 transition-colors hover:text-ink-foreground sm:inline-block"
           >
-            Program
+            Hi-PRO Program
           </Link>
           <Link
             to="/login"
@@ -23,7 +23,7 @@ export const SiteHeader = () => {
             Sign in
           </Link>
           <Button asChild variant="hero" size="pill">
-            <Link to="/register">Join Hi-PRO</Link>
+            <Link to="/register">Join Dealer Rewards</Link>
           </Button>
         </nav>
       </div>

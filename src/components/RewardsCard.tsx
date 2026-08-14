@@ -11,7 +11,7 @@ export const RewardsCard = ({
       <div className="relative overflow-hidden rounded-3xl border border-ink-border bg-card-dark p-6 shadow-card sm:p-8">
         <div className="flex items-start justify-between">
           <span className="text-[11px] font-semibold tracking-[0.18em] text-ink-muted">
-            Hi-PRO Rewards Card
+            Hisense Dealer Rewards
           </span>
         </div>
 

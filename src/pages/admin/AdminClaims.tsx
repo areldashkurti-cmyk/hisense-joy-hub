@@ -124,7 +124,7 @@ const AdminClaims = () => {
       cardholder_name:
         [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
         profile?.email ||
-        "Hi-PRO Dealer",
+        "Dealer",
     });
   };
 

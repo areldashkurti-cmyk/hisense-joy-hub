@@ -50,7 +50,7 @@ export const Logo = ({
             taglineColor,
           )}
         >
-          Hi-PRO Dealer Rewards
+          Dealer Rewards
         </span>
       )}
     </div>

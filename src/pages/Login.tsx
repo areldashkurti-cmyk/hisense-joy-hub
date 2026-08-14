@@ -77,7 +77,7 @@ const Login = () => {
           <div className="mt-10 text-center">
             <h1 className="text-4xl font-bold tracking-tight">Welcome back</h1>
             <p className="mt-2 text-muted-foreground">
-              Sign in to your Hi-PRO Dealer Rewards account.
+              Sign in to your Hisense Dealer Rewards account.
             </p>
           </div>
 
@@ -130,7 +130,7 @@ const Login = () => {
           </form>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            New to Hi-PRO Rewards?{" "}
+            New to Hisense Dealer Rewards?{" "}
             <Link
               to="/register"
               className="font-semibold text-primary hover:underline"
