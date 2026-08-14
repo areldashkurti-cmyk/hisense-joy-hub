@@ -13,8 +13,8 @@ const Index = () => {
       <EarnFunds />
       <HowItWorks />
       <ProgramFAQ />
-      <HiProProgram />
       <ClosingCTA />
+      <HiProProgram />
       <SiteFooter />
     </main>
   );
