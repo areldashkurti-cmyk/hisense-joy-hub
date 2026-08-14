@@ -1,4 +1,4 @@
-import { Download, Building2, ArrowUpRight } from "lucide-react";
+import { Download, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const HiProProgram = () => {
