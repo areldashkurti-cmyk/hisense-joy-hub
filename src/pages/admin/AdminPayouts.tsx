@@ -260,7 +260,7 @@ const AdminPayouts = () => {
                       )}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
-                      {last4 ? `•••• ${last4}` : "—"}
+                      {last4 ? `•••• ${last4}` : "-"}
                     </td>
                     <td className="px-4 py-3 font-semibold">${balance.toFixed(2)}</td>
                     <td className="px-4 py-3 text-right">

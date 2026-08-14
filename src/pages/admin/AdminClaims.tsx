@@ -326,11 +326,11 @@ const AdminClaims = () => {
                 <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                   <div>
                     <p className="text-muted-foreground">Invoice date</p>
-                    <p className="font-medium">{active.invoice_date ?? "—"}</p>
+                    <p className="font-medium">{active.invoice_date ?? "-"}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Dealer</p>
-                    <p className="font-medium">{active.invoice_dealer ?? "—"}</p>
+                    <p className="font-medium">{active.invoice_dealer ?? "-"}</p>
                   </div>
                 </div>
                 <Button

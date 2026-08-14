@@ -155,7 +155,7 @@ const AdminBonusCodes = () => {
                 <tr key={c.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-mono">{c.code}</td>
                   <td className="px-4 py-3 font-semibold">${Number(c.amount).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{c.note ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{c.note ?? "-"}</td>
                   <td className="px-4 py-3">
                     {c.redeemed_by ? (
                       <Badge className="rounded-full bg-primary/15 text-primary">
