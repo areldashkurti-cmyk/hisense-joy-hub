@@ -13,9 +13,6 @@ export const HiProProgram = () => {
             </span>
           </div>
 
-          <h2 className="mt-6 text-4xl font-bold tracking-tight text-ink-foreground sm:text-5xl">
-            Why become a Hi-PRO dealer?
-          </h2>
 
           <p className="mt-5 text-lg leading-relaxed text-ink-muted">
             The Hi-PRO Dealer Program is Hisense HVAC's premier partnership for
