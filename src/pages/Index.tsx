@@ -1,10 +1,8 @@
 import { Hero } from "@/components/Hero";
-import { WhyJoin } from "@/components/WhyJoin";
-import { ProgramHighlights } from "@/components/ProgramHighlights";
+import { EarnFunds } from "@/components/EarnFunds";
 import { HowItWorks } from "@/components/HowItWorks";
-import { PartnerConfidence } from "@/components/PartnerConfidence";
-import { ToolsSupport } from "@/components/ToolsSupport";
 import { ProgramFAQ } from "@/components/ProgramFAQ";
+import { HiProProgram } from "@/components/HiProProgram";
 import { ClosingCTA } from "@/components/ClosingCTA";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -12,12 +10,10 @@ const Index = () => {
   return (
     <main className="min-h-screen bg-background">
       <Hero />
-      <WhyJoin />
-      <ProgramHighlights />
+      <EarnFunds />
       <HowItWorks />
-      <PartnerConfidence />
-      <ToolsSupport />
       <ProgramFAQ />
+      <HiProProgram />
       <ClosingCTA />
       <SiteFooter />
     </main>
