@@ -22,10 +22,6 @@ const faqs = [
     q: "What if I don't know my distributor code?",
     a: "Our team will review and verify it before your claims are approved.",
   },
-  {
-    q: "How is this different from the Hi-PRO Dealer Program?",
-    a: "Hisense Dealer Rewards is the self-serve rewards platform on this site. The Hi-PRO Dealer Program is a separate program administered through participating distributors — contact your distributor for registration and complete benefits.",
-  },
 ];
 
 export const ProgramFAQ = () => {
