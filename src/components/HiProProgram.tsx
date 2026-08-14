@@ -6,9 +6,9 @@ export const HiProProgram = () => {
     <section id="hi-pro" className="bg-ink bg-hero py-24 sm:py-32">
       <div className="container">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-ink-border bg-ink-card/60 px-4 py-1.5 backdrop-blur">
-            <Building2 className="h-3.5 w-3.5 text-primary-glow" />
-            <span className="text-[11px] font-semibold tracking-[0.18em] text-ink-foreground/90">
+          <div className="inline-flex items-center gap-3 rounded-full border border-ink-border bg-ink-card/60 px-6 py-3 backdrop-blur">
+            <Building2 className="h-8 w-8 text-primary-glow" />
+            <span className="text-[33px] leading-tight font-semibold tracking-[0.06em] text-ink-foreground/90">
               A separate program, through your distributor
             </span>
           </div>
