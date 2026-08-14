@@ -1,4 +1,4 @@
-import { Download, Building2, ArrowUpRight } from "lucide-react";
+import { Download, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const HiProProgram = () => {
@@ -6,12 +6,10 @@ export const HiProProgram = () => {
     <section id="hi-pro" className="bg-ink bg-hero py-24 sm:py-32">
       <div className="container">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-3 rounded-full border border-ink-border bg-ink-card/60 px-6 py-3 backdrop-blur">
-            <Building2 className="h-8 w-8 text-primary-glow" />
-            <span className="text-[33px] leading-tight font-semibold tracking-[0.06em] text-ink-foreground/90">
-              A separate program, through your distributor
-            </span>
-          </div>
+          <h2 className="text-4xl font-bold tracking-tight text-ink-foreground sm:text-5xl">
+            A separate program, through your distributor
+          </h2>
+
 
 
           <p className="mt-5 text-lg leading-relaxed text-ink-muted">
