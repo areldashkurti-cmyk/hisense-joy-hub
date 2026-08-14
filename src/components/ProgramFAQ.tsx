@@ -18,10 +18,6 @@ const faqs = [
     q: "How long does registration take?",
     a: "Under a minute. You'll need your name, email, an optional phone number, your distributor, and a mailing address.",
   },
-  {
-    q: "What if I don't know my distributor code?",
-    a: "Our team will review and verify it before your claims are approved.",
-  },
 ];
 
 export const ProgramFAQ = () => {
