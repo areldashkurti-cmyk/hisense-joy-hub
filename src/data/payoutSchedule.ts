@@ -1,5 +1,5 @@
-// Hi-PRO Rewards payout schedule. All amounts USD.
-// Source: Hi-PRO Rewards payout sheet.
+// Hisense Dealer Rewards payout schedule. All amounts USD.
+// Source: Hisense Dealer Rewards payout sheet.
 
 export type PayoutRow = { label: string; amount: number; note?: string };
 export type PayoutSeries = { series: string; rows: PayoutRow[] };
@@ -27,7 +27,7 @@ export const PAYOUT_SCHEDULE: PayoutCategory[] = [
         ],
       },
       {
-        series: "Hi-PRO HD complete systems",
+        series: "HD complete systems",
         rows: [
           { label: "5 Ton", amount: 85 },
           { label: "4 Ton", amount: 85 },
@@ -72,7 +72,7 @@ export const PAYOUT_SCHEDULE: PayoutCategory[] = [
         ],
       },
       {
-        series: "Hi-PRO Ductless systems",
+        series: "Ductless systems",
         rows: [{ label: "9k / 12k / 15k", amount: 25 }],
       },
       {
