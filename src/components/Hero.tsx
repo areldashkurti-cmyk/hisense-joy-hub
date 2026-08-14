@@ -17,7 +17,7 @@ export const Hero = () => {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
               <span className="text-[11px] font-semibold tracking-[0.18em] text-ink-foreground/90">
-                2026 Hi-PRO Dealer Program
+                Hisense Dealer Rewards
               </span>
             </div>
 
@@ -26,16 +26,16 @@ export const Hero = () => {
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
-              Hisense HVAC's premier partnership for professional dealers.
-              Earn up to <span className="font-semibold text-ink-foreground">$100 per installed system</span>,
-              plus marketing accruals, extended labor coverage, and priority
-              support built to grow your business.
+              Earn up to{" "}
+              <span className="font-semibold text-ink-foreground">$100</span> on
+              qualifying installed systems. Register in under a minute, submit
+              your installs, and get paid to a reloadable Mastercard®.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Button asChild variant="hero" size="pill-lg">
                 <Link to="/register">
-                  Enroll as a Hi-PRO Dealer
+                  Create your account
                   <ArrowRight className="ml-1" />
                 </Link>
               </Button>
@@ -45,9 +45,7 @@ export const Hero = () => {
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-medium text-ink-muted">
-              <span>✓ Up to $100 per install</span>
-              <span>✓ Up to 3% marketing accruals</span>
-              <span>✓ Up to 2 years extended labor</span>
+              <span>✓ Up to $100 on qualifying installed systems, paid to a reloadable Mastercard®</span>
             </div>
           </div>
 
