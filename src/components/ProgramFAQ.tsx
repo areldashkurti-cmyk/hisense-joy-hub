@@ -7,28 +7,28 @@ import {
 
 const faqs = [
   {
-    q: "Who qualifies for the Hi-PRO Dealer Program?",
-    a: "The Hi-PRO Dealer Program is designed for professional HVAC dealers committed to installing Hisense HVAC systems. To begin earning marketing accruals, dealers must reach $50,000 in qualifying Hisense HVAC purchases per calendar year.",
+    q: "Who can register for Hisense Dealer Rewards?",
+    a: "Any dealer who purchases and installs qualifying Hisense products can register on their own — no invitation or sponsorship required.",
   },
   {
     q: "How do I earn rewards?",
-    a: "Every qualified Hisense installation earns up to $100 per system, paid to your reloadable Hisense Rewards Mastercard®. Submit a claim in your dealer portal, and approved rewards are loaded to your card automatically.",
+    a: "Register your account, then submit a claim for each qualifying Hisense system you install. Approved claims earn a flat dollar reward, up to $100 per qualifying installed system.",
   },
   {
-    q: "How do marketing accruals work?",
-    a: "You earn 2% on Hisense HD Ducted and Ductless Systems and 3% on Hisense VRF Systems. Accruals can fund advertising, digital marketing, events, training, and other approved marketing activities that grow your local business.",
+    q: "How do I get paid?",
+    a: "Approved rewards are loaded to your reloadable Hisense Dealer Rewards Mastercard®. Spend the funds anywhere Mastercard® is accepted.",
   },
   {
-    q: "What's included with extended labor coverage?",
-    a: "Qualifying Hisense systems include up to two years of extended labor coverage at no cost. Dealers can also purchase additional coverage — up to ten years total. Program details, eligibility, and coverage terms apply.",
+    q: "How long does registration take?",
+    a: "Under a minute. You'll need your name, email, an optional phone number, your distributor, and a mailing address.",
   },
   {
-    q: "How do I get technical support?",
-    a: "Hi-PRO Dealers receive priority access to Hisense technical support through the Hisense Comfort Hi-TECH support app, available on Apple and Android devices.",
+    q: "What if I don't know my distributor number?",
+    a: "Choose \"Other / I don't know my distributor number\" and enter what you know. Our team will review and verify it before your claims are approved.",
   },
   {
-    q: "How do I sign up?",
-    a: "Create your Hi-PRO account online in minutes. Your participating Hisense distributor can walk you through eligibility and answer any program-specific questions.",
+    q: "How is this different from the Hi-PRO Dealer Program?",
+    a: "Hisense Dealer Rewards is the self-serve rewards platform on this site. The Hi-PRO Dealer Program is a separate program administered through participating distributors — contact your distributor for registration and complete benefits.",
   },
 ];
 
@@ -42,7 +42,7 @@ export const ProgramFAQ = () => {
               Frequently Asked
             </div>
             <h2 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-              Program questions, answered.
+              Questions, answered.
             </h2>
           </div>
 
