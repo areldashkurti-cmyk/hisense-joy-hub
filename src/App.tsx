@@ -7,7 +7,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { RequireAuth } from "@/components/RequireAuth";
 import { RequireAdmin } from "@/components/RequireAdmin";
 import Index from "./pages/Index.tsx";
-import Program from "./pages/Program.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
@@ -38,9 +37,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/program" element={<Program />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Index />} />            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
