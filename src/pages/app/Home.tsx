@@ -91,12 +91,12 @@ const Home = () => {
                 key={post.id}
                 className={
                   featured
-                    ? "relative overflow-hidden border-primary/40 bg-card-dark p-8 shadow-glow sm:p-12"
+                    ? "relative w-full overflow-hidden border-2 border-primary/50 bg-card-dark p-10 shadow-glow sm:p-16"
                     : "p-6"
                 }
               >
                 {featured && (
-                  <span className="mb-4 inline-block rounded-full border border-primary/40 bg-accent px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-accent-foreground">
+                  <span className="mb-5 inline-block rounded-full border border-primary/40 bg-accent px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent-foreground">
                     Program update
                   </span>
                 )}
@@ -106,7 +106,7 @@ const Home = () => {
                 <h3
                   className={
                     featured
-                      ? "mt-3 text-3xl font-bold leading-tight tracking-tight sm:text-5xl"
+                      ? "mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-6xl"
                       : "mt-2 text-base font-semibold leading-snug"
                   }
                 >
@@ -115,13 +115,14 @@ const Home = () => {
                 <p
                   className={
                     featured
-                      ? "mt-4 max-w-2xl text-lg text-muted-foreground sm:text-xl"
+                      ? "mt-6 max-w-3xl text-xl leading-relaxed text-muted-foreground sm:text-2xl"
                       : "mt-2 text-sm text-muted-foreground"
                   }
                 >
                   {post.excerpt}
                 </p>
               </Card>
+
             );
           })}
         </div>
