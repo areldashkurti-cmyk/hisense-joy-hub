@@ -86,44 +86,50 @@ const Home = () => {
         >
           {news.map((post) => {
             const featured = news.length === 1;
+            if (featured) {
+              return (
+                <Card
+                  key={post.id}
+                  className="relative w-full overflow-hidden rounded-2xl border-2 border-primary bg-card-dark p-8 shadow-glow sm:p-12"
+                >
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-primary/20 blur-3xl"
+                  />
+                  <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-4xl">
+                      🎉
+                    </div>
+                    <div className="min-w-0">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        Coming soon
+                      </span>
+                      <h3 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+                        {post.title}
+                      </h3>
+                      <p className="mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+                        {post.excerpt}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              );
+            }
             return (
-              <Card
-                key={post.id}
-                className={
-                  featured
-                    ? "relative w-full overflow-hidden border-2 border-primary/50 bg-card-dark p-10 shadow-glow sm:p-16"
-                    : "p-6"
-                }
-              >
-                {featured && (
-                  <span className="mb-5 inline-block rounded-full border border-primary/40 bg-accent px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent-foreground">
-                    Program update
-                  </span>
-                )}
+              <Card key={post.id} className="p-6">
                 <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                   {format(new Date(post.published_at), "MMM d, yyyy")}
                 </p>
-                <h3
-                  className={
-                    featured
-                      ? "mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-6xl"
-                      : "mt-2 text-base font-semibold leading-snug"
-                  }
-                >
+                <h3 className="mt-2 text-base font-semibold leading-snug">
                   {post.title}
                 </h3>
-                <p
-                  className={
-                    featured
-                      ? "mt-6 max-w-3xl text-xl leading-relaxed text-muted-foreground sm:text-2xl"
-                      : "mt-2 text-sm text-muted-foreground"
-                  }
-                >
+                <p className="mt-2 text-sm text-muted-foreground">
                   {post.excerpt}
                 </p>
               </Card>
-
             );
+
           })}
         </div>
 
