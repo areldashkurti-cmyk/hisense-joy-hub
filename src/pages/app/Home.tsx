@@ -77,19 +77,55 @@ const Home = () => {
             Latest news
           </h2>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {news.map((post) => (
-            <Card key={post.id} className="p-6">
-              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                {format(new Date(post.published_at), "MMM d, yyyy")}
-              </p>
-              <h3 className="mt-2 text-base font-semibold leading-snug">
-                {post.title}
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
-            </Card>
-          ))}
+        <div
+          className={
+            news.length === 1
+              ? "grid gap-4"
+              : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          }
+        >
+          {news.map((post) => {
+            const featured = news.length === 1;
+            return (
+              <Card
+                key={post.id}
+                className={
+                  featured
+                    ? "relative overflow-hidden border-primary/40 bg-card-dark p-8 shadow-glow sm:p-12"
+                    : "p-6"
+                }
+              >
+                {featured && (
+                  <span className="mb-4 inline-block rounded-full border border-primary/40 bg-accent px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-accent-foreground">
+                    Program update
+                  </span>
+                )}
+                <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                  {format(new Date(post.published_at), "MMM d, yyyy")}
+                </p>
+                <h3
+                  className={
+                    featured
+                      ? "mt-3 text-3xl font-bold leading-tight tracking-tight sm:text-5xl"
+                      : "mt-2 text-base font-semibold leading-snug"
+                  }
+                >
+                  {post.title}
+                </h3>
+                <p
+                  className={
+                    featured
+                      ? "mt-4 max-w-2xl text-lg text-muted-foreground sm:text-xl"
+                      : "mt-2 text-sm text-muted-foreground"
+                  }
+                >
+                  {post.excerpt}
+                </p>
+              </Card>
+            );
+          })}
         </div>
+
       </section>
     </AppShell>
   );
