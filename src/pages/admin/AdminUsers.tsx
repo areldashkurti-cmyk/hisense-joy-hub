@@ -135,6 +135,10 @@ const AdminUsers = () => {
   });
 
   const cardMap = new Map(cards.map((c) => [c.user_id, c]));
+  const distMap = useMemo(
+    () => new Map(distributors.map((d) => [d.id, d.code])),
+    [distributors],
+  );
   const adminSet = useMemo(
     () => new Set(roles.filter((r) => r.role === "admin").map((r) => r.user_id)),
     [roles],
