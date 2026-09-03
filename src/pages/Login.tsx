@@ -124,6 +124,7 @@ const Login = () => {
                 name="password"
                 type="password"
                 autoComplete="current-password"
+                defaultValue={devDefaults.password}
                 required
                 className="h-12 rounded-xl bg-card"
               />
