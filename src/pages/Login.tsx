@@ -101,6 +101,7 @@ const Login = () => {
                 type="email"
                 autoComplete="email"
                 placeholder="you@company.com"
+                defaultValue={devDefaults.email}
                 required
                 className="h-12 rounded-xl bg-card"
               />
