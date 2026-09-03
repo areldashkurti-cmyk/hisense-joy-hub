@@ -56,6 +56,7 @@ type Profile = {
   state: string | null;
   postal_code: string | null;
   country: string | null;
+  distributor_id: string | null;
   created_at: string;
 };
 
@@ -95,9 +96,17 @@ const AdminUsers = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, first_name, last_name, email, phone, street, apt, city, state, postal_code, country, created_at")
+        .select("id, first_name, last_name, email, phone, street, apt, city, state, postal_code, country, distributor_id, created_at")
         .order("created_at", { ascending: false });
       return (data ?? []) as Profile[];
+    },
+  });
+
+  const { data: distributors = [] } = useQuery({
+    queryKey: ["admin-users-distributors"],
+    queryFn: async () => {
+      const { data } = await supabase.from("distributors").select("id, code");
+      return (data ?? []) as { id: string; code: string }[];
     },
   });
 
@@ -126,6 +135,10 @@ const AdminUsers = () => {
   });
 
   const cardMap = new Map(cards.map((c) => [c.user_id, c]));
+  const distMap = useMemo(
+    () => new Map(distributors.map((d) => [d.id, d.code])),
+    [distributors],
+  );
   const adminSet = useMemo(
     () => new Set(roles.filter((r) => r.role === "admin").map((r) => r.user_id)),
     [roles],
@@ -290,6 +303,7 @@ const AdminUsers = () => {
               <tr>
                 <th className="px-4 py-3 font-semibold">Dealer</th>
                 <th className="px-4 py-3 font-semibold">Email</th>
+                <th className="px-4 py-3 font-semibold">Distributor code</th>
                 <th className="px-4 py-3 font-semibold">Role</th>
                 <th className="px-4 py-3 font-semibold">Card</th>
                 <th className="px-4 py-3 font-semibold">Balance</th>
@@ -308,6 +322,9 @@ const AdminUsers = () => {
                       {[p.first_name, p.last_name].filter(Boolean).join(" ") || "-"}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{p.email ?? "-"}</td>
+                    <td className="px-4 py-3 font-mono text-xs">
+                      {(p.distributor_id && distMap.get(p.distributor_id)) || "-"}
+                    </td>
                     <td className="px-4 py-3">
                       <span
                         className={
