@@ -322,6 +322,9 @@ const AdminUsers = () => {
                       {[p.first_name, p.last_name].filter(Boolean).join(" ") || "-"}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{p.email ?? "-"}</td>
+                    <td className="px-4 py-3 font-mono text-xs">
+                      {(p.distributor_id && distMap.get(p.distributor_id)) || "-"}
+                    </td>
                     <td className="px-4 py-3">
                       <span
                         className={
