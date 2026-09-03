@@ -56,6 +56,7 @@ type Profile = {
   state: string | null;
   postal_code: string | null;
   country: string | null;
+  distributor_id: string | null;
   created_at: string;
 };
 
@@ -95,9 +96,17 @@ const AdminUsers = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, first_name, last_name, email, phone, street, apt, city, state, postal_code, country, created_at")
+        .select("id, first_name, last_name, email, phone, street, apt, city, state, postal_code, country, distributor_id, created_at")
         .order("created_at", { ascending: false });
       return (data ?? []) as Profile[];
+    },
+  });
+
+  const { data: distributors = [] } = useQuery({
+    queryKey: ["admin-users-distributors"],
+    queryFn: async () => {
+      const { data } = await supabase.from("distributors").select("id, code");
+      return (data ?? []) as { id: string; code: string }[];
     },
   });
 
