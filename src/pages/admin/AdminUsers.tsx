@@ -303,6 +303,7 @@ const AdminUsers = () => {
               <tr>
                 <th className="px-4 py-3 font-semibold">Dealer</th>
                 <th className="px-4 py-3 font-semibold">Email</th>
+                <th className="px-4 py-3 font-semibold">Distributor code</th>
                 <th className="px-4 py-3 font-semibold">Role</th>
                 <th className="px-4 py-3 font-semibold">Card</th>
                 <th className="px-4 py-3 font-semibold">Balance</th>
