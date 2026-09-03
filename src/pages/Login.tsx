@@ -16,6 +16,15 @@ const loginSchema = z.object({
 });
 type LoginInput = z.infer<typeof loginSchema>;
 
+// Dev-only convenience: prefill test credentials so testing is one click.
+// Never applied in production builds.
+const devDefaults = import.meta.env.DEV
+  ? {
+      email: import.meta.env.VITE_TEST_EMAIL ?? "test@example.com",
+      password: import.meta.env.VITE_TEST_PASSWORD ?? "password123",
+    }
+  : { email: "", password: "" };
+
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
