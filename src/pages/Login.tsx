@@ -20,7 +20,7 @@ type LoginInput = z.infer<typeof loginSchema>;
 // Never applied in production builds.
 const devDefaults = import.meta.env.DEV
   ? {
-      email: import.meta.env.VITE_TEST_EMAIL ?? "test@example.com",
+      email: import.meta.env.VITE_TEST_EMAIL ?? "Fullarse@icloud.com",
       password: import.meta.env.VITE_TEST_PASSWORD ?? "password123",
     }
   : { email: "", password: "" };
