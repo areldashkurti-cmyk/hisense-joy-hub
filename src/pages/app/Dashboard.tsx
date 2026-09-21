@@ -76,6 +76,19 @@ const Dashboard = () => {
     },
   });
 
+  const { data: eventBonus } = useQuery({
+    queryKey: ["event-bonus", user?.id],
+    enabled: isReady && !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("event_attendees")
+        .select("bonus_amount, event_name, credited_at")
+        .eq("credited_user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
   const stats = useMemo(() => {
     const total = claims.length;
     const pending = claims.filter((c) => c.status === "pending").length;
@@ -116,6 +129,25 @@ const Dashboard = () => {
       </header>
 
       
+
+      {eventBonus && (
+        <Card className="mb-6 flex flex-wrap items-center justify-between gap-4 border-primary/40 bg-primary/10 p-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              Bonus applied
+            </p>
+            <p className="mt-1 text-lg font-bold">
+              ${Number(eventBonus.bonus_amount).toFixed(2)} {eventBonus.event_name} registration bonus
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Already added to your available balance. Nothing else to do.
+            </p>
+          </div>
+          <p className="text-3xl font-black text-primary">
+            +${Number(eventBonus.bonus_amount).toFixed(2)}
+          </p>
+        </Card>
+      )}
 
       {/* Rewards card */}
       <Card className="relative overflow-hidden border-0 bg-ink bg-card-dark p-8 text-ink-foreground shadow-card">

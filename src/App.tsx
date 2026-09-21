@@ -25,6 +25,7 @@ import AdminUsers from "./pages/admin/AdminUsers.tsx";
 import AdminContent from "./pages/admin/AdminContent.tsx";
 import AdminProducts from "./pages/admin/AdminProducts.tsx";
 import AdminBonusCodes from "./pages/admin/AdminBonusCodes.tsx";
+import AdminEventBonuses from "./pages/admin/AdminEventBonuses.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/admin/content" element={<RequireAdmin><AdminContent /></RequireAdmin>} />
             <Route path="/admin/products" element={<RequireAdmin><AdminProducts /></RequireAdmin>} />
             <Route path="/admin/bonus-codes" element={<RequireAdmin><AdminBonusCodes /></RequireAdmin>} />
+            <Route path="/admin/event-bonuses" element={<RequireAdmin><AdminEventBonuses /></RequireAdmin>} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

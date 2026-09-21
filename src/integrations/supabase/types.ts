@@ -142,6 +142,42 @@ export type Database = {
         }
         Relationships: []
       }
+      event_attendees: {
+        Row: {
+          bonus_amount: number
+          created_at: string
+          credited_at: string | null
+          credited_user_id: string | null
+          email: string
+          event_name: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+        }
+        Insert: {
+          bonus_amount?: number
+          created_at?: string
+          credited_at?: string | null
+          credited_user_id?: string | null
+          email: string
+          event_name?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+        }
+        Update: {
+          bonus_amount?: number
+          created_at?: string
+          credited_at?: string | null
+          credited_user_id?: string | null
+          email?: string
+          event_name?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+        }
+        Relationships: []
+      }
       news_posts: {
         Row: {
           body: string | null
