@@ -25,6 +25,7 @@ const nav = [
   { to: "/admin/content", label: "Promotions & news", icon: Megaphone },
   { to: "/admin/products", label: "Products", icon: Package },
   { to: "/admin/bonus-codes", label: "Bonus codes", icon: Ticket },
+  { to: "/admin/event-bonuses", label: "Event bonuses", icon: PartyPopper },
 ];
 
 export const AdminShell = ({ children }: { children: React.ReactNode }) => {
