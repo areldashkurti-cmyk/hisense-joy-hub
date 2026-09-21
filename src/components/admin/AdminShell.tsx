@@ -8,6 +8,7 @@ import {
   Megaphone,
   Package,
   Ticket,
+  PartyPopper,
   LogOut,
   ArrowLeft,
 } from "lucide-react";
