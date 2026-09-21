@@ -76,6 +76,19 @@ const Dashboard = () => {
     },
   });
 
+  const { data: eventBonus } = useQuery({
+    queryKey: ["event-bonus", user?.id],
+    enabled: isReady && !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("event_attendees")
+        .select("bonus_amount, event_name, credited_at")
+        .eq("credited_user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
   const stats = useMemo(() => {
     const total = claims.length;
     const pending = claims.filter((c) => c.status === "pending").length;
