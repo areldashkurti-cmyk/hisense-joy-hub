@@ -25,6 +25,7 @@ import AdminUsers from "./pages/admin/AdminUsers.tsx";
 import AdminContent from "./pages/admin/AdminContent.tsx";
 import AdminProducts from "./pages/admin/AdminProducts.tsx";
 import AdminBonusCodes from "./pages/admin/AdminBonusCodes.tsx";
+import AdminEventBonuses from "./pages/admin/AdminEventBonuses.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
