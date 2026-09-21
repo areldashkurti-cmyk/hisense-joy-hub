@@ -130,6 +130,25 @@ const Dashboard = () => {
 
       
 
+      {eventBonus && (
+        <Card className="mb-6 flex flex-wrap items-center justify-between gap-4 border-primary/40 bg-primary/10 p-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              Bonus applied
+            </p>
+            <p className="mt-1 text-lg font-bold">
+              ${Number(eventBonus.bonus_amount).toFixed(2)} {eventBonus.event_name} registration bonus
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Already added to your available balance. Nothing else to do.
+            </p>
+          </div>
+          <p className="text-3xl font-black text-primary">
+            +${Number(eventBonus.bonus_amount).toFixed(2)}
+          </p>
+        </Card>
+      )}
+
       {/* Rewards card */}
       <Card className="relative overflow-hidden border-0 bg-ink bg-card-dark p-8 text-ink-foreground shadow-card">
         <div className="absolute right-0 top-0 h-64 w-64 -translate-y-12 translate-x-12 rounded-full bg-primary/30 blur-3xl" />
