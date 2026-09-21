@@ -58,6 +58,7 @@ const App = () => (
             <Route path="/admin/content" element={<RequireAdmin><AdminContent /></RequireAdmin>} />
             <Route path="/admin/products" element={<RequireAdmin><AdminProducts /></RequireAdmin>} />
             <Route path="/admin/bonus-codes" element={<RequireAdmin><AdminBonusCodes /></RequireAdmin>} />
+            <Route path="/admin/event-bonuses" element={<RequireAdmin><AdminEventBonuses /></RequireAdmin>} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
