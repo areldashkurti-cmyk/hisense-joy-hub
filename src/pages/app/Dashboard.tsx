@@ -127,6 +127,7 @@ const Dashboard = () => {
           </Link>
         </Button>
       </header>
+      <MyPromotionsCard />
 
       
 

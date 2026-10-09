@@ -7,6 +7,7 @@ import {
   Users,
   Megaphone,
   Package,
+  Tag,
   Ticket,
   PartyPopper,
   LogOut,
@@ -18,13 +19,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-const nav = [
+const nav: { to: string; label: string; icon: typeof Package; end?: boolean; indent?: boolean }[] = [
   { to: "/admin", label: "Claims queue", icon: ClipboardList, end: true },
   { to: "/admin/payouts", label: "Payouts", icon: Banknote },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
   { to: "/admin/users", label: "Users & cards", icon: Users },
   { to: "/admin/content", label: "Promotions & news", icon: Megaphone },
   { to: "/admin/products", label: "Products", icon: Package },
+  { to: "/admin/promotions", label: "Promotions", icon: Tag, indent: true },
   { to: "/admin/bonus-codes", label: "Bonus codes", icon: Ticket },
   { to: "/admin/event-bonuses", label: "Event bonuses", icon: PartyPopper },
 ];
@@ -50,7 +52,7 @@ export const AdminShell = ({ children }: { children: React.ReactNode }) => {
             <ShieldCheck className="h-3.5 w-3.5" /> Admin portal
           </div>
           <nav className="flex flex-col gap-1">
-            {nav.map(({ to, label, icon: Icon, end }) => (
+            {nav.map(({ to, label, icon: Icon, end, indent }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -58,6 +60,7 @@ export const AdminShell = ({ children }: { children: React.ReactNode }) => {
                 className={({ isActive }) =>
                   cn(
                     "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                    indent && "ml-5 py-2 text-xs",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground",
