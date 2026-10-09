@@ -54,6 +54,7 @@ export type Database = {
         Row: {
           customer_name: string
           decided_at: string | null
+          extra_amount: number
           id: string
           invoice_date: string | null
           invoice_dealer: string | null
@@ -61,11 +62,15 @@ export type Database = {
           notes: string | null
           payout_amount: number
           product_id: string | null
+          promotion_id: string | null
+          promotion_name: string | null
           proof_path: string | null
           sale_date: string
           serial_number: string
+          standard_amount: number | null
           status: Database["public"]["Enums"]["claim_status"]
           submitted_at: string
+          total_amount: number | null
           user_id: string
           validation_details: Json | null
           validation_status: Database["public"]["Enums"]["validation_status"]
@@ -73,6 +78,7 @@ export type Database = {
         Insert: {
           customer_name: string
           decided_at?: string | null
+          extra_amount?: number
           id?: string
           invoice_date?: string | null
           invoice_dealer?: string | null
@@ -80,11 +86,15 @@ export type Database = {
           notes?: string | null
           payout_amount?: number
           product_id?: string | null
+          promotion_id?: string | null
+          promotion_name?: string | null
           proof_path?: string | null
           sale_date: string
           serial_number: string
+          standard_amount?: number | null
           status?: Database["public"]["Enums"]["claim_status"]
           submitted_at?: string
+          total_amount?: number | null
           user_id: string
           validation_details?: Json | null
           validation_status?: Database["public"]["Enums"]["validation_status"]
@@ -92,6 +102,7 @@ export type Database = {
         Update: {
           customer_name?: string
           decided_at?: string | null
+          extra_amount?: number
           id?: string
           invoice_date?: string | null
           invoice_dealer?: string | null
@@ -99,11 +110,15 @@ export type Database = {
           notes?: string | null
           payout_amount?: number
           product_id?: string | null
+          promotion_id?: string | null
+          promotion_name?: string | null
           proof_path?: string | null
           sale_date?: string
           serial_number?: string
+          standard_amount?: number | null
           status?: Database["public"]["Enums"]["claim_status"]
           submitted_at?: string
+          total_amount?: number | null
           user_id?: string
           validation_details?: Json | null
           validation_status?: Database["public"]["Enums"]["validation_status"]
@@ -116,7 +131,136 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "claims_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "distributor_promotions"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      distributor_promotion_dealers: {
+        Row: {
+          promotion_id: string
+          user_id: string
+        }
+        Insert: {
+          promotion_id: string
+          user_id: string
+        }
+        Update: {
+          promotion_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distributor_promotion_dealers_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "distributor_promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      distributor_promotion_distributors: {
+        Row: {
+          distributor_id: string
+          promotion_id: string
+        }
+        Insert: {
+          distributor_id: string
+          promotion_id: string
+        }
+        Update: {
+          distributor_id?: string
+          promotion_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distributor_promotion_distributors_distributor_id_fkey"
+            columns: ["distributor_id"]
+            isOneToOne: false
+            referencedRelation: "distributors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "distributor_promotion_distributors_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "distributor_promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      distributor_promotion_products: {
+        Row: {
+          product_id: string
+          promotion_id: string
+        }
+        Insert: {
+          product_id: string
+          promotion_id: string
+        }
+        Update: {
+          product_id?: string
+          promotion_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distributor_promotion_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "distributor_promotion_products_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "distributor_promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      distributor_promotions: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          distributor_scope: string
+          end_date: string
+          extra_amount: number
+          id: string
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          distributor_scope?: string
+          end_date: string
+          extra_amount: number
+          id?: string
+          name: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          distributor_scope?: string
+          end_date?: string
+          extra_amount?: number
+          id?: string
+          name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       distributors: {
         Row: {
@@ -552,6 +696,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      best_promotion_for: {
+        Args: { _on: string; _product_id: string; _user_id: string }
+        Returns: {
+          extra_amount: number
+          name: string
+          promotion_id: string
+        }[]
+      }
+      eligible_promotions: {
+        Args: { _on: string; _user_id: string }
+        Returns: {
+          end_date: string
+          extra_amount: number
+          name: string
+          product_id: string
+          promotion_id: string
+        }[]
+      }
+      get_my_promotions: {
+        Args: never
+        Returns: {
+          end_date: string
+          extra_amount: number
+          model_number: string
+          name: string
+          product_id: string
+          promotion_id: string
+          series: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
