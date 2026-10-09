@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { useMyPromotions } from "@/hooks/useMyPromotions";
 
 const claimSchema = z.object({
   saleDate: z.string().min(1, "Date of sale is required"),
@@ -49,6 +50,7 @@ const NewClaim = () => {
   const [submitting, setSubmitting] = useState(false);
   const [series, setSeries] = useState<string>("");
   const [modelNumber, setModelNumber] = useState<string>("");
+  const { data: myPromos = [] } = useMyPromotions();
 
   const { data: products = [] } = useQuery({
     queryKey: ["products-active"],
@@ -249,21 +251,32 @@ const NewClaim = () => {
               </div>
             </div>
 
-            {selectedProduct && (
-              <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-                <span className="font-mono font-semibold text-primary">
-                  {selectedProduct.model_number}
-                </span>
-                {selectedProduct.category && (
-                  <span className="text-muted-foreground">· {selectedProduct.category}</span>
-                )}
-                {selectedProduct.payout_rate != null && (
-                  <span className="ml-auto font-semibold">
-                    Payout: ${Number(selectedProduct.payout_rate).toFixed(2)}
+            {selectedProduct && (() => {
+              const std = Number(selectedProduct.payout_rate ?? 0);
+              const promo = myPromos.find((p) => p.product_id === selectedProduct.id);
+              return (
+                <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+                  <span className="font-mono font-semibold text-primary">
+                    {selectedProduct.model_number}
                   </span>
-                )}
-              </div>
-            )}
+                  {selectedProduct.category && (
+                    <span className="text-muted-foreground">· {selectedProduct.category}</span>
+                  )}
+                  {selectedProduct.payout_rate != null && (
+                    <span className="ml-auto font-semibold">
+                      {promo
+                        ? `Standard $${std.toFixed(2)} + Promo $${Number(promo.extra_amount).toFixed(2)} = Total $${(std + Number(promo.extra_amount)).toFixed(2)}`
+                        : `Payout: $${std.toFixed(2)}`}
+                    </span>
+                  )}
+                  {promo && (
+                    <p className="w-full text-xs text-muted-foreground">
+                      Promo applies when the date of sale is within the promotion period (ends {promo.end_date}).
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
           <div className="space-y-2">

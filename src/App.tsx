@@ -26,6 +26,8 @@ import AdminContent from "./pages/admin/AdminContent.tsx";
 import AdminProducts from "./pages/admin/AdminProducts.tsx";
 import AdminBonusCodes from "./pages/admin/AdminBonusCodes.tsx";
 import AdminEventBonuses from "./pages/admin/AdminEventBonuses.tsx";
+import AdminPromotions from "./pages/admin/AdminPromotions.tsx";
+import AdminPromotionDetail from "./pages/admin/AdminPromotionDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -57,6 +59,8 @@ const App = () => (
             <Route path="/admin/users" element={<RequireAdmin><AdminUsers /></RequireAdmin>} />
             <Route path="/admin/content" element={<RequireAdmin><AdminContent /></RequireAdmin>} />
             <Route path="/admin/products" element={<RequireAdmin><AdminProducts /></RequireAdmin>} />
+            <Route path="/admin/promotions" element={<RequireAdmin><AdminPromotions /></RequireAdmin>} />
+            <Route path="/admin/promotions/:id" element={<RequireAdmin><AdminPromotionDetail /></RequireAdmin>} />
             <Route path="/admin/bonus-codes" element={<RequireAdmin><AdminBonusCodes /></RequireAdmin>} />
             <Route path="/admin/event-bonuses" element={<RequireAdmin><AdminEventBonuses /></RequireAdmin>} />
 
