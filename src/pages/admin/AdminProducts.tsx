@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { promoStatus, usePromoLookups, usePromotions } from "./AdminPromotions";
 
 type Product = {
   id: string;
@@ -69,6 +71,20 @@ const AdminProducts = () => {
       return (data ?? []) as Product[];
     },
   });
+
+  const { data: promos = [] } = usePromotions();
+  const { data: lk } = usePromoLookups();
+  const runningByProduct = useMemo(() => {
+    const dist = new Map((lk?.distributors ?? []).map((d) => [d.id, d.code]));
+    const m = new Map<string, string[]>();
+    promos.filter((p) => promoStatus(p) === "Running").forEach((p) => {
+      const who = p.distributor_scope === "all" ? "All distributors" : p.distributor_promotion_distributors.map((d) => dist.get(d.distributor_id)).join(", ");
+      p.distributor_promotion_products.forEach(({ product_id }) => {
+        m.set(product_id, [...(m.get(product_id) ?? []), `+$${Number(p.extra_amount).toFixed(2)} · ${who}`]);
+      });
+    });
+    return m;
+  }, [promos, lk]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -177,6 +193,16 @@ const AdminProducts = () => {
                     <td className="px-4 py-3 text-muted-foreground">{p.product_type ?? "-"}</td>
                     <td className="px-4 py-3">
                       {p.payout_rate != null ? `$${Number(p.payout_rate).toFixed(2)}` : "-"}
+                      {runningByProduct.has(p.id) && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" className="ml-2 cursor-default border-primary/40 text-primary">+ Promo</Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {runningByProduct.get(p.id)!.map((t) => <div key={t}>{t}</div>)}
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <Switch checked={p.active} onCheckedChange={() => toggleActive.mutate(p)} />
