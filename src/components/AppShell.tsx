@@ -10,12 +10,14 @@ import {
   X,
   ShieldCheck,
   DollarSign,
+  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useMyPromotions } from "@/hooks/useMyPromotions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -33,6 +35,10 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { data: myPromos = [] } = useMyPromotions();
+  const items = myPromos.length > 0
+    ? [...nav.slice(0, 4), { to: "/app/promotions", label: "Promotions", icon: Sparkles }, ...nav.slice(4)]
+    : nav;
 
   const handleSignOut = async () => {
     await signOut();
@@ -42,7 +48,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
 
   const navItems = (
     <nav className="flex flex-col gap-1">
-      {nav.map(({ to, label, icon: Icon, end }) => (
+      {items.map(({ to, label, icon: Icon, end }) => (
         <NavLink
           key={to}
           to={to}
