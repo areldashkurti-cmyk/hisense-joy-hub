@@ -316,6 +316,17 @@ const AdminPromotions = () => {
                   onChange={(products) => setForm({ ...form, products })}
                   placeholder="Search Hisense Model# or Series"
                 />
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs text-muted-foreground">Add by series:</span>
+                  {[...new Set(lk.products.map((p) => p.series))].sort().map((s) => (
+                    <Button
+                      key={s} type="button" size="sm" variant="outline" className="h-7 px-2 text-xs"
+                      onClick={() => setForm({ ...form, products: [...new Set([...form.products, ...lk.products.filter((p) => p.series === s).map((p) => p.id)])] })}
+                    >
+                      + {s}
+                    </Button>
+                  ))}
+                </div>
               </Field>
 
               <Field label="Distributors" error={errors.distributors}>

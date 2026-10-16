@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -37,6 +38,10 @@ type ClaimRow = {
   sale_date: string;
   status: "pending" | "approved" | "denied" | "paid";
   payout_amount: number;
+  standard_amount: number | null;
+  extra_amount: number;
+  promotion_id: string | null;
+  promotion_name: string | null;
   proof_path: string | null;
   notes: string | null;
   submitted_at: string;
@@ -218,7 +223,10 @@ const AdminClaims = () => {
                     <th className="px-4 py-3 font-semibold">Dealer</th>
                     <th className="px-4 py-3 font-semibold">Customer</th>
                     <th className="px-4 py-3 font-semibold">Model</th>
-                    <th className="px-4 py-3 font-semibold">Amount</th>
+                    <th className="px-4 py-3 font-semibold">Standard</th>
+                    <th className="px-4 py-3 font-semibold">Promo ($)</th>
+                    <th className="px-4 py-3 font-semibold">Promotion</th>
+                    <th className="px-4 py-3 font-semibold">Total</th>
                     <th className="px-4 py-3 font-semibold">Status</th>
                     <th className="px-4 py-3 font-semibold">AI check</th>
                     <th className="px-4 py-3 font-semibold text-right">Action</th>
@@ -239,6 +247,11 @@ const AdminClaims = () => {
                         <td className="px-4 py-3 font-medium">{name}</td>
                         <td className="px-4 py-3 text-muted-foreground">{c.customer_name}</td>
                         <td className="px-4 py-3 font-mono text-xs">{c.model_number}</td>
+                        <td className="px-4 py-3 text-muted-foreground">${Number(c.standard_amount ?? c.payout_amount).toFixed(2)}</td>
+                        <td className="px-4 py-3">${Number(c.extra_amount ?? 0).toFixed(2)}</td>
+                        <td className="px-4 py-3 text-xs">
+                          {c.promotion_id ? <Link to={`/admin/promotions/${c.promotion_id}`} className="text-primary underline-offset-2 hover:underline">{c.promotion_name ?? "View"}</Link> : "-"}
+                        </td>
                         <td className="px-4 py-3 font-semibold">
                           ${Number(c.payout_amount).toFixed(2)}
                         </td>

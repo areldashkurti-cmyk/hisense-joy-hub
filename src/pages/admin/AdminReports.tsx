@@ -215,7 +215,11 @@ const AdminReports = () => {
                     serial_number: c.serial_number,
                     sale_date: c.sale_date,
                     status: c.status,
-                    payout_amount: c.payout_amount,
+                    standard_amount: c.standard_amount ?? c.payout_amount,
+                    promo_amount: c.extra_amount ?? 0,
+                    promo_id: c.promotion_id ?? "",
+                    promo_name: c.promotion_name ?? "",
+                    total_reward: c.payout_amount,
                   })),
                 )
               }

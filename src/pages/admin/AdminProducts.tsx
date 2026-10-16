@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Search, Loader2 } from "lucide-react";
+import { Plus, Pencil, Search, Loader2, Download } from "lucide-react";
 import { z } from "zod";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Card } from "@/components/ui/card";
@@ -56,6 +56,7 @@ const blank: Product = {
 const AdminProducts = () => {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
+  const [promoOnly, setPromoOnly] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
 
   const { data: products = [], isLoading } = useQuery({
@@ -77,24 +78,37 @@ const AdminProducts = () => {
   const runningByProduct = useMemo(() => {
     const dist = new Map((lk?.distributors ?? []).map((d) => [d.id, d.code]));
     const m = new Map<string, string[]>();
+    const amt = new Map<string, number>();
+    const dists = new Map<string, string[]>();
     promos.filter((p) => promoStatus(p) === "Running").forEach((p) => {
       const who = p.distributor_scope === "all" ? "All distributors" : p.distributor_promotion_distributors.map((d) => dist.get(d.distributor_id)).join(", ");
       p.distributor_promotion_products.forEach(({ product_id }) => {
-        m.set(product_id, [...(m.get(product_id) ?? []), `+$${Number(p.extra_amount).toFixed(2)} · ${who}`]);
+        m.set(product_id, [...(m.get(product_id) ?? []), `${p.name}: +$${Number(p.extra_amount).toFixed(2)} · ${who}`]);
+        amt.set(product_id, Math.max(amt.get(product_id) ?? 0, Number(p.extra_amount)));
+        dists.set(product_id, [...new Set([...(dists.get(product_id) ?? []), ...who.split(", ")])]);
       });
     });
-    return m;
+    return Object.assign(m, { amt, dists });
   }, [promos, lk]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return products;
-    return products.filter((p) =>
+    const base = promoOnly ? products.filter((p) => runningByProduct.has(p.id)) : products;
+    if (!s) return base;
+    return base.filter((p) =>
       [p.series, p.category, p.model_number, p.compatible_model, p.product_type]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(s)),
     );
-  }, [products, q]);
+  }, [products, q, promoOnly, runningByProduct]);
+
+  const exportCsv = () => {
+    const head = ["model_number","compatible_model","series","category","type","payout_rate","active","promo","promo_reward","promo_distributors"];
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const rows = filtered.map((p) => [p.model_number, p.compatible_model, p.series, p.category, p.product_type, p.payout_rate, p.active, runningByProduct.has(p.id), runningByProduct.amt.get(p.id) ?? 0, (runningByProduct.dists.get(p.id) ?? []).join("; ")].map(esc).join(","));
+    const blob = new Blob([[head.join(","), ...rows].join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "products.csv"; a.click();
+  };
 
   const save = useMutation({
     mutationFn: async (p: Product) => {
@@ -162,7 +176,13 @@ const AdminProducts = () => {
             className="h-11 pl-9"
           />
         </div>
+        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Switch checked={promoOnly} onCheckedChange={setPromoOnly} /> Promo only
+        </label>
         <span className="text-xs text-muted-foreground">{filtered.length} items</span>
+        <Button size="sm" variant="outline" className="ml-auto" onClick={exportCsv}>
+          <Download className="mr-1 h-3.5 w-3.5" /> Export CSV
+        </Button>
       </div>
 
       <Card className="overflow-hidden p-0">
@@ -179,6 +199,7 @@ const AdminProducts = () => {
                   <th className="px-4 py-3 font-semibold">Category</th>
                   <th className="px-4 py-3 font-semibold">Type</th>
                   <th className="px-4 py-3 font-semibold">Payout Rate</th>
+                  <th className="px-4 py-3 font-semibold">Promo Reward</th>
                   <th className="px-4 py-3 font-semibold">Active</th>
                   <th className="px-4 py-3 font-semibold text-right">Edit</th>
                 </tr>
@@ -204,6 +225,7 @@ const AdminProducts = () => {
                         </Tooltip>
                       )}
                     </td>
+                    <td className="px-4 py-3">${(runningByProduct.amt.get(p.id) ?? 0).toFixed(2)}</td>
                     <td className="px-4 py-3">
                       <Switch checked={p.active} onCheckedChange={() => toggleActive.mutate(p)} />
                     </td>
@@ -216,7 +238,7 @@ const AdminProducts = () => {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
+                    <td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">
                       No products match your search.
                     </td>
                   </tr>
